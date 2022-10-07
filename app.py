@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, jsonify
+from flask import Flask, render_template, redirect
 
 
 #Import json
@@ -30,12 +30,12 @@ neighborhood = base.classes.neighborhood
 # Create an instance of Flask
 app = Flask(__name__)
 
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
+#app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
 
 # Route to render index.html template
 @app.route('/')
 def index():
-
+    print("this is my file")
     return render_template('index.html')
 
 
@@ -45,32 +45,6 @@ def getSQL():
 
     # Redirect back to home page
     return redirect("/")
-
-@app.route("/readjsonfile/<filename>")
-def ReadJsonFileRoute(filename):    
-
-    ''' Opens a JSON or GeoJSON file and then returns
-        its contents to the client. The filename is specified
-        as a parameter. '''
-
-    # Note that we have to assemble the complete filepath. We do this on the 
-    # server because the client has no knowledge of the server's file structure.
-
-    filepath = f"static/data/{filename}"
-
-
-    # Add some simple error handling to help if the user entered an invalid
-    # filename. 
-    try: 
-        with open(filepath) as f:    
-            json_data = json.load(f)
-    except:
-        json_data = {'Error': f'{filename} not found on server!'}
-
-
-    print('Returning data from a file')
-
-    return jsonify(json_data)
 
 if __name__ == "__main__":
     app.run(debug=True)

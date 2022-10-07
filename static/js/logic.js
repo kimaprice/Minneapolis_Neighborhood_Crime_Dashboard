@@ -1,7 +1,9 @@
 //Minneapolis Neighborhood GeoJson filepath
-const file_endpoint = "readjsonfile/Minneapolis_Neighborhoods.geojson"; 
+//const file_endpoint = "readjsonfile/Minneapolis_Neighborhoods.geojson"; 
 
-let url = file_endpoint; 
+//let url = file_endpoint; 
+
+let url = "static/Data/Minneapolis_Neighborhoods.geojson"
 
 // Creating the map object
 let myMap = L.map("map", {
