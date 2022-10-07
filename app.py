@@ -30,29 +30,34 @@ neighborhood = base.classes.neighborhood
 # Create an instance of Flask
 app = Flask(__name__)
 
-# Route to render index.html template using data from Mongo
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
+
+# Route to render index.html template
 @app.route('/')
 def index():
 
     return render_template('index.html')
 
 
-# Route to gather neighborhood specific data
-@app.route("/getData")
-def getData():
+# Route to gather data from PostgreSQL DB: minne_crime_db
+@app.route("/getNeighborhoodData")
+def getSQL():
 
     # Redirect back to home page
     return redirect("/")
 
 @app.route("/readjsonfile/<filename>")
 def ReadJsonFileRoute(filename):    
+
     ''' Opens a JSON or GeoJSON file and then returns
         its contents to the client. The filename is specified
         as a parameter. '''
 
     # Note that we have to assemble the complete filepath. We do this on the 
     # server because the client has no knowledge of the server's file structure.
+
     filepath = f"static/data/{filename}"
+
 
     # Add some simple error handling to help if the user entered an invalid
     # filename. 
@@ -61,6 +66,7 @@ def ReadJsonFileRoute(filename):
             json_data = json.load(f)
     except:
         json_data = {'Error': f'{filename} not found on server!'}
+
 
     print('Returning data from a file')
 
