@@ -1,3 +1,4 @@
+from telnetlib import theNULL
 from flask import Flask, render_template, redirect
 
 
@@ -40,11 +41,29 @@ def index():
 
 
 # Route to gather data from PostgreSQL DB: minne_crime_db
-@app.route("/getNeighborhoodData")
-def getSQL():
+@app.route("/getNeighborhoodData/<neighborhoodName>")
+def getSQL(neighborhoodName):
+
+    # Open a session, run the query to get crime data, and then close the session again
+    session = Session(engine)
+    if neighborhood = 'all':
+       results = session.query(neighborhood).join(crime_data, neighborhood.neighborhood_id==crime_data.neighborhood_id).all()
+    else:
+        results = session.query(neighborhood).join(crime_data, neighborhood.neighborhood_id==crime_data.neighborhood_id).filter(User.email == neighborhoodName).all()
+
+    session.close()
+
+    # Create a list of dictionaries, with each dictionary containing one row from the query. 
+    crime_info = []
+    for id, neighborhoodN, occurred_date in results:
+        dict = {}
+        dict["neighborhood_id"] = id
+        dict["neighborhoodN"] = neighborhoodN
+        dict["occurred_date"] = occurred_date
+        crime_info.append(dict)
 
     # Redirect back to home page
-    return redirect("/")
+    return (crime_info)
 
 if __name__ == "__main__":
     app.run(debug=True)
