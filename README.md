@@ -21,8 +21,8 @@ This code base gathers datasets to create a dashboard for Minneapolis neighborho
 	* Description: This source contains one csv per neighborhood, per demographic area. We are targeting age, income and education for all Minneapolis neighborhoods.
 	
 * Minneapolis Neighborhood GeoJson
-	* Link:  https://github.com/blackmad/neighborhoods/blob/master/minneapolis.geojson
-	* Description: GeoJson file containing the mapping of the neighborhoods in Minneapolis.
+	* Link:  https://opendata.minneapolismn.gov/datasets/minneapolis-neighborhoods/explore?location=44.970893%2C-93.261718%2C12.88
+	* Description: GeoJson file containing the mapping of the neighborhoods in Minneapolis from the Minneaoplis government site.
 
 # Instructions to recreate the PostgreSQL database housing the demographic and crime data
 
