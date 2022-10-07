@@ -27,7 +27,7 @@ This code base gathers datasets to create a dashboard for Minneapolis neighborho
 # Instructions to recreate the PostgreSQL database housing the demographic and crime data
 
 Schema for database:
-![alt text](/Data/DB_files/minne_crime_data%20DB_schema.png)
+![alt text](./DB_files/minne_crime_data%20DB_schema.png)
 
  1. Clone the Repo git@github.com:kimaprice/Minneapolis_Neighborhood_Crime_Dashboard.git
  1. Open pgAdmin PostgreSQL
