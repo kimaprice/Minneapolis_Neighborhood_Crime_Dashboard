@@ -32,11 +32,11 @@ Schema for database:
  1. Clone the Repo git@github.com:kimaprice/Minneapolis_Neighborhood_Crime_Dashboard.git
  1. Open pgAdmin PostgreSQL
  1. Create a new database named ``minne_crime_db``.
- 1. Open the ``DB_files/minne_crime_db_Create.sql`` file in a query tool and run it to create the tables.
+ 1. Open the ``Resources/DB_files/minne_crime_db_Create.sql`` file in a query tool and run it to create the tables.
  1. Run ``jupyter notebook`` and open ``crime_data_ETL.ipynb`` - run this in an environment that has pandas, sqlalchemy, numpy, and python 3.8
  1. Verify and update as needed the `username` `port` and `password` in the `LOAD` section of the notebook to match your PostgreSQL.
  1. Run the notebook.
- 1. Use this test queries in ``DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
+ 1. Use this test queries in ``Resources/DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
  
 # Dashboard Use
 
