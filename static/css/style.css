@@ -13,3 +13,23 @@ body,
 html {
   height: 100%;
 }
+
+html, body, .container-fluid, #map_canvas {
+  height:100%;
+}
+.container-fluid {
+  width:100%;
+  position:absolute;
+  top:0;
+  padding:0;
+}
+#map_canvas {
+  border-top:50px solid #fff;
+  border-bottom:20px solid #fff;
+}
+header {
+  height:50px;
+}
+footer {
+  height:20px;
+}
