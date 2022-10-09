@@ -37,6 +37,12 @@
         <div class="row">
           <p>Description of the dashboard goes here</p>
         </div>
+        <div class="row">
+          <div class="col-6">Dropdown:</div>
+          <div class="col-6">
+            <select id="selDataset" onchange="optionChanged(this.value)"></select>
+          </div>
+        </div>
         <div class="row h-100">
           <div class="col-8">
             <div class="row h-25" id="map">
@@ -44,23 +50,19 @@
             </div>
             <div class="row" id="Crime">
               Crime List: <br>
-              {{crime_list}}
             </div>
           </div>
           <div class="col-4" id="DemoVisualizations">
             <div class="row" id="Neighborhood">
-              Neighborhood List<br>
-              {{neighborhood_list}}
             </div>
-            <div class="row" id="Age">
-              Demo List<br>
-              {{demo_list}}
+            <div class="row">
+              <div class="col h-100" id="Age"></div>
             </div>
-            <div class="row" id="Income">
-              Income Demographics go here
+            <div class="row">
+              <div class="col h-100" id="Income"></div>
             </div>
-            <div class="row" id="Education">
-              Education Demographics go here
+            <div class="row">
+              <div class="col h-100" id="Education"></div>
             </div>
           </div>
         </div>
