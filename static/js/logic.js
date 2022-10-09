@@ -26,12 +26,13 @@ function initPage() {
   let dropDownText = dropDown.property("text");
 
   console.log(dropDownText);
-  d3.select("#Neighborhood").text(dropDownText);
-  console.log("2");
+  //d3.select("#Neighborhood").text(dropDownText);
+  console.log(dropDownId);
   //Call chart functions
-  createIncomeBar(dropDownId);
-  createAgeBar(dropDownId);
-  createEducationBar(dropDownId);
+  createEducationBar(dropDownId, 'Education');
+  createAgeBar(dropDownId, 'Age');
+  createIncomeBar(dropDownId, 'Income');
+  createCrimeChart();
   console.log("3");
   });
 }
@@ -61,7 +62,6 @@ d3.json(geoFile).then(function(data) {
 
 
 // -------Neighborhood Crime Chart Functionality ----- //
-
 
 
 // ------ Neighborhood Demographic Charts functionality ----- //
@@ -169,6 +169,7 @@ function createEducationBar(neighID){
     Plotly.newPlot('Education', data, layout);
   });
 }
+
 
 //-------------  On DropDown Change function ---------------//
 function optionChanged(neighID){

@@ -2,53 +2,53 @@
 -- NOTE! If you have used non-SQL datatypes in your design, you will have to change these here.
 
 
-CREATE TABLE "neighborhood" (
-    "neighborhood_id" int   NOT NULL,
+CREATE TABLE "neighborhooddata" (
+    "neighborhoodid" int   NOT NULL,
     "neighborhood" varchar   NOT NULL,
-    CONSTRAINT "pk_neighborhood" PRIMARY KEY (
-        "neighborhood_id"
+    CONSTRAINT "pk_neighborhooddata" PRIMARY KEY (
+        "neighborhoodid"
      )
 );
 
-CREATE TABLE "crime_data" (
+CREATE TABLE "crimedata" (
     "id" serial   NOT NULL,
-    "neighborhood_id" int   NOT NULL,
+    "neighborhoodid" int   NOT NULL,
     "occurred_date" date   NOT NULL,
     "offense_cat" varchar   NOT NULL,
     "offense" varchar   NOT NULL,
     "latitude" float   NOT NULL,
     "longitude" float   NOT NULL,
     "crime_count" float   NOT NULL,
-    CONSTRAINT "pk_crime_data" PRIMARY KEY (
+    CONSTRAINT "pk_crimedata" PRIMARY KEY (
         "id"
      )
 );
 
-CREATE TABLE "demographic_data" (
+CREATE TABLE "demographicdata" (
     "id" serial   NOT NULL,
-    "neighborhood_id" int   NOT NULL,
-    "demo_id" int   NOT NULL,
+    "neighborhoodid" int   NOT NULL,
+    "demoid" int   NOT NULL,
     "percent" float   NOT NULL,
-    CONSTRAINT "pk_demographic_data" PRIMARY KEY (
+    CONSTRAINT "pk_demographicdata" PRIMARY KEY (
         "id"
      )
 );
 
-CREATE TABLE "demo_cat" (
-    "demo_id" int   NOT NULL,
+CREATE TABLE "democat" (
+    "demoid" int   NOT NULL,
     "demographic" varchar   NOT NULL,
     "category" varchar   NOT NULL,
-    CONSTRAINT "pk_demo_cat" PRIMARY KEY (
-        "demo_id"
+    CONSTRAINT "pk_democat" PRIMARY KEY (
+        "demoid"
      )
 );
 
-ALTER TABLE "crime_data" ADD CONSTRAINT "fk_crime_data_neighborhood_id" FOREIGN KEY("neighborhood_id")
-REFERENCES "neighborhood" ("neighborhood_id");
+ALTER TABLE "crimedata" ADD CONSTRAINT "fk_crimedata_neighborhoodid" FOREIGN KEY("neighborhoodid")
+REFERENCES "neighborhooddata" ("neighborhoodid");
 
-ALTER TABLE "demographic_data" ADD CONSTRAINT "fk_demographic_data_neighborhood_id" FOREIGN KEY("neighborhood_id")
-REFERENCES "neighborhood" ("neighborhood_id");
+ALTER TABLE "demographicdata" ADD CONSTRAINT "fk_demographicdata_neighborhoodid" FOREIGN KEY("neighborhoodid")
+REFERENCES "neighborhooddata" ("neighborhoodid");
 
-ALTER TABLE "demographic_data" ADD CONSTRAINT "fk_demographic_data_demo_id" FOREIGN KEY("demo_id")
-REFERENCES "demo_cat" ("demo_id");
+ALTER TABLE "demographicdata" ADD CONSTRAINT "fk_demographicdata_demoid" FOREIGN KEY("demoid")
+REFERENCES "democat" ("demoid");
 

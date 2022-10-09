@@ -22,10 +22,10 @@ base = automap_base()
 base.prepare(engine, reflect=True)
 
 #Reflect the tables
-crimeData = base.classes.crimeData
-demoCat = base.classes.demoCat
-demographicData = base.classes.demographicData
-neighborhoodData = base.classes.neighborhoodData
+crimeData = base.classes.crimedata
+demoCat = base.classes.democat
+demographicData = base.classes.demographicdata
+neighborhoodData = base.classes.neighborhooddata
 
 # Create an instance of Flask
 app = Flask(__name__)
@@ -46,8 +46,8 @@ def getDemographicData(neighID):
     session = Session(engine)
     
     #Get Demo data for all Minneapolis
-    sel = [demographicData.neighborhoodID, demoCat.demographic, demoCat.category, demographicData.percent]
-    demo_results = session.query(*sel).join(demographicData, demoCat.demoID == demographicData.demoID).filter(demographicData.neighborhoodID == neighID).all()
+    sel = [demographicData.neighborhoodid, demoCat.demographic, demoCat.category, demographicData.percent]
+    demo_results = session.query(*sel).join(demographicData, demoCat.demoid == demographicData.demoid).filter(demographicData.neighborhoodid == neighID).all()
     
     #Close the session
     session.close()
@@ -55,9 +55,9 @@ def getDemographicData(neighID):
      #Put demographic data into a list of dictionaries
     demo_list = []
     for record in demo_results:
-        (demographicData_neighborhoodID, demoCat_demographic, demoCat_category, demographicData_percent) = record
+        (demographicData_neighborhoodid, demoCat_demographic, demoCat_category, demographicData_percent) = record
         dict = {}
-        dict["neighborhoodID"] = demographicData_neighborhoodID
+        dict["neighborhoodID"] = demographicData_neighborhoodid
         dict["demographic"] = demoCat_demographic
         dict["category"] = demoCat_category
         dict["percent"] = demographicData_percent
@@ -80,16 +80,16 @@ def getNeighborhoods():
     session = Session(engine)
 
     #Get list of neighborhoods with ID
-    neigh_results = session.query(neighborhoodData.neighborhoodID, neighborhoodData.neighborhood).all()
+    neigh_results = session.query(neighborhoodData.neighborhoodid, neighborhoodData.neighborhood).all()
     
     #Close the session
     session.close()
 
     #Put neighborhoods into a list of dictionaries
     neighborhood_list = []
-    for neighborhoodData_neighborhoodID, neighborhoodData_neighborhood in neigh_results:
+    for neighborhoodData_neighborhoodid, neighborhoodData_neighborhood in neigh_results:
         dict = {}
-        dict["neighborhoodID"] = neighborhoodData_neighborhoodID
+        dict["neighborhoodID"] = neighborhoodData_neighborhoodid
         dict["neighborhood"] = neighborhoodData_neighborhood
         neighborhood_list.append(dict)
 
@@ -104,8 +104,8 @@ def getCrimeData():
     session = Session(engine)
 
     #Get Crime data for all Minneapolis
-    sel = [neighborhoodData.neighborhoodID, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
-    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodID == crimeData.neighborhoodID).all()
+    sel = [neighborhoodData.neighborhoodid, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
+    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodid == crimeData.neighborhoodid).all()
   
     #Close the session
     session.close()
@@ -113,9 +113,9 @@ def getCrimeData():
     #Put crime data into a list of dictionaries
     crime_list = []
     for record in crime_results:
-        (neighborhoodData_neighborhoodID, neighborhoodData_neighborhood, crimeData_occurred_date, crimeData_offense_cat, crimeData_offense, crimeData_latitude, crimeData_longitude, crimeData_crime_count) = record
+        (neighborhoodData_neighborhoodid, neighborhoodData_neighborhood, crimeData_occurred_date, crimeData_offense_cat, crimeData_offense, crimeData_latitude, crimeData_longitude, crimeData_crime_count) = record
         dict = {}
-        dict["neighborhoodID"] = neighborhoodData_neighborhoodID
+        dict["neighborhoodID"] = neighborhoodData_neighborhoodid
         dict["neighborhood"] = neighborhoodData_neighborhood
         dict["offense_cat"] = crimeData_offense_cat
         dict["crime_count"] = crimeData_crime_count
