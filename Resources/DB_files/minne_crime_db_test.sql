@@ -1,15 +1,15 @@
-Select * from demo_cat;
+Select * from demoCat;
 
-Select * from demographic_data;
+Select * from demographicData;
 
 Select * from neighborhood;
 
-Select * from crime_data;
+Select * from crimeData;
 
 Select n.neighborhood,
 d.offense_cat,
 sum(d.crime_count)
-from crime_data as d 
+from crimeData as d 
 left join neighborhood as n
 on d.neighborhood_id = n.neighborhood_id
 Group By n.neighborhood,
@@ -21,10 +21,10 @@ Select n.neighborhood,
 c.demographic,
 c.category,
 d.percent
-from demographic_data as d
+from demographicData as d
 left join neighborhood as n
 on d.neighborhood_id = n.neighborhood_id
-left join demo_cat as c
+left join demoCat as c
 on d.demo_id = c.demo_id
 where n.neighborhood = 'Ericsson';
 
