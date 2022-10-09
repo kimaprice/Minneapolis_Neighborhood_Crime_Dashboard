@@ -29,28 +29,59 @@ neighborhoodData = base.classes.neighborhoodData
 
 # Create an instance of Flask
 app = Flask(__name__)
-
-#app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
 
 # Route to render index.html template
 @app.route('/')
 def index():
-    print("this is my file")
+    print("Loading index.html")
 
+    return render_template('index.html')
+
+# Route to gather data from PostgreSQL DB: minne_crime_db
+@app.route("/getDemographicData/<neighID>")
+def getDemographicData(neighID):
+    print("Getting data")
+    # Open a session
+    session = Session(engine)
+    
+    #Get Demo data for all Minneapolis
+    sel = [demographicData.neighborhoodID, demoCat.demographic, demoCat.category, demographicData.percent]
+    demo_results = session.query(*sel).join(demographicData, demoCat.demoID == demographicData.demoID).filter(demographicData.neighborhoodID == neighID).all()
+    
+    #Close the session
+    session.close()
+
+     #Put demographic data into a list of dictionaries
+    demo_list = []
+    for record in demo_results:
+        (demographicData_neighborhoodID, demoCat_demographic, demoCat_category, demographicData_percent) = record
+        dict = {}
+        dict["neighborhoodID"] = demographicData_neighborhoodID
+        dict["demographic"] = demoCat_demographic
+        dict["category"] = demoCat_category
+        dict["percent"] = demographicData_percent
+        demo_list.append(dict)
+    
+    # data = []
+    # data.append({"neighborhoodList": neighborhood_list})
+    # data.append({"crimeData": crime_list})
+    # data.append({"demoList": demo_list})
+    # print("data gathered")
+
+    # Neighborhood crime info
+    return jsonify(demo_list)
+
+    # Route to gather data from PostgreSQL DB: minne_crime_db
+@app.route("/getNeighborhoods")
+def getNeighborhoods():
+    print("Getting data")
     # Open a session
     session = Session(engine)
 
     #Get list of neighborhoods with ID
-    neigh_results = session.query(neighborhoodData.neighborhoodID, neighborhoodData.neighborhood).filter(neighborhoodData.neighborhoodID == 1).all()
+    neigh_results = session.query(neighborhoodData.neighborhoodID, neighborhoodData.neighborhood).all()
     
-    #Get Demo data for all Minneapolis
-    sel = [demographicData.neighborhoodID, demoCat.demographic, demoCat.category, demographicData.percent]
-    demo_results = session.query(*sel).join(demographicData, demoCat.demoID == demographicData.demoID).filter(demographicData.neighborhoodID == 1).all()
-    
-    #Get Crime data for all Minneapolis
-    sel = [neighborhoodData.neighborhoodID, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
-    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodID == crimeData.neighborhoodID).filter(neighborhoodData.neighborhoodID == 1).all()
-  
     #Close the session
     session.close()
 
@@ -61,7 +92,24 @@ def index():
         dict["neighborhoodID"] = neighborhoodData_neighborhoodID
         dict["neighborhood"] = neighborhoodData_neighborhood
         neighborhood_list.append(dict)
-    
+
+    # Neighborhood crime info
+    return jsonify(neighborhood_list)
+
+    # Route to gather data from PostgreSQL DB: minne_crime_db
+@app.route("/getCrimeData")
+def getCrimeData():
+    print("Getting data")
+    # Open a session
+    session = Session(engine)
+
+    #Get Crime data for all Minneapolis
+    sel = [neighborhoodData.neighborhoodID, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
+    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodID == crimeData.neighborhoodID).all()
+  
+    #Close the session
+    session.close()
+
     #Put crime data into a list of dictionaries
     crime_list = []
     for record in crime_results:
@@ -77,28 +125,9 @@ def index():
         dict["longitude"] = crimeData_longitude
         crime_list.append(dict)
 
-    #Put demographic data into a list of dictionaries
-    demo_list = []
-    for record in demo_results:
-        (demographicData_neighborhoodID, demoCat_demographic, demoCat_category, demographicData_percent) = record
-        dict = {}
-        dict["neighborhood_id"] = demographicData_neighborhoodID
-        dict["demographic"] = demoCat_demographic
-        dict["category"] = demoCat_category
-        dict["percent"] = demographicData_percent
-        demo_list.append(dict)
-
-    #Render the index.html and pass the lists containing neighborhood, demographic and crime data
-    return render_template('index.html', neighborhood_list=neighborhood_list, demo_list = demo_list, crime_list = crime_list)
-
-
-# Route to gather data from PostgreSQL DB: minne_crime_db
-@app.route("/getNeighborhoodData")
-def getSQL(neighborhoodName):
-
 
     # Neighborhood crime info
-    return redirect("/", code=302)
+    return jsonify(crime_list)
 
 if __name__ == "__main__":
     app.run(debug=True)
