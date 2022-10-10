@@ -9,6 +9,8 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy import or_
+from sqlalchemy import func
+from sqlalchemy import and_
 
 # Define the PostgreSQL connection parameters
 username = 'postgres'  # Ideally this would come from config.py (or similar)
@@ -92,10 +94,82 @@ def getNeighborhoods():
     # Neighborhood crime info
     return jsonify(neighborhood_list)
 
+# Route to gather high level crime data for neighborhood and Minneapolis from PostgreSQL DB: minne_crime_db
+@app.route("/getCrimeData/<neighid>")
+def getCrimeData(neighid):
+    print("Getting data")
+    # Open a session
+    session = Session(engine)
 
-# Route to gather crime data from PostgreSQL DB: minne_crime_db
-@app.route("/getCrimeData")
-def getCrimeData():
+    #Get Crime data for all Minneapolis
+    sel1 = [crimeData.year, func.sum(crimeData.crime_count).label('crimetotal')]
+    crime_results_all = session.query(*sel1).filter(crimeData.year >= 2019).group_by(crimeData.year).order_by(crimeData.year).all()
+  
+    #Get Crime data for all selected neighborhood
+    sel = [crimeData.year, func.sum(crimeData.crime_count).label('crimetotal')]
+    crime_results = session.query(*sel).filter(and_(crimeData.neighborhoodid == neighid, crimeData.year >= 2019)).group_by(crimeData.year).order_by(crimeData.year).all()
+
+    #Close the session
+    session.close()
+
+    #Put b into a list of dictionaries
+    
+    crime_list = []
+    for crimeData_year, crimeData_crimetotal in crime_results_all:
+        dict={}
+        dict['id']=100
+        dict['year']= crimeData_year
+        dict['crime_counts']= crimeData_crimetotal
+        crime_list.append(dict)
+
+    for crimeData_year, crimeData_crimetotal in crime_results:
+        dict={}
+        dict['id']=neighid
+        dict['year']= crimeData_year
+        dict['crime_counts']= crimeData_crimetotal
+        crime_list.append(dict)
+
+
+    # Neighborhood crime info
+    return jsonify(crime_list)
+
+# Route to gather crime breakdown for a neighborhood from PostgreSQL DB: minne_crime_db
+@app.route("/getCrimeBreakdown/<neighid>")
+def getCrimeBreakdown(neighid):
+    print("Getting data")
+    # Open a session
+    session = Session(engine)
+
+    #Get Crime data for all Minneapolis
+    sel = [neighborhoodData.neighborhoodid, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
+    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodid == crimeData.neighborhoodid).all()
+  
+    #Close the session
+    session.close()
+
+    #Put crime data into a list of dictionaries
+    crime_list = []
+    for record in crime_results:
+        (neighborhoodData_neighborhoodid, neighborhoodData_neighborhood, crimeData_occurred_date, crimeData_offense_cat, crimeData_offense, crimeData_latitude, crimeData_longitude, crimeData_crime_count) = record
+        dict = {}
+        dict["neighborhoodID"] = neighborhoodData_neighborhoodid
+        dict["neighborhood"] = neighborhoodData_neighborhood
+        dict["offense_cat"] = crimeData_offense_cat
+        dict["crime_count"] = crimeData_crime_count
+        dict["occured_date"] = crimeData_occurred_date
+        dict["offense"] = crimeData_offense
+        dict["latitude"] = crimeData_latitude
+        dict["longitude"] = crimeData_longitude
+        crime_list.append(dict)
+
+
+    # Neighborhood crime info
+    return jsonify(crime_list)
+
+
+# Route to gather fuld crimedata table from PostgreSQL DB: minne_crime_db
+@app.route("/DetailedCrimeData")
+def DetailedCrimeData():
     print("Getting data")
     # Open a session
     session = Session(engine)

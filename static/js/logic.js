@@ -1,7 +1,7 @@
 //Minneapolis Neighborhood GeoJson filepath
 // set the endpoint URL
 const NeighborhoodData = "/getNeighborhoods";
-const CrimeData = "/getCrimeData";
+const CrimeData = "/getCrimeData/";
 const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
 
@@ -12,7 +12,7 @@ initPage();
 function initPage() {
   console.log("test1")
   d3.json(NeighborhoodData).then(function(data) {
-    console.log(data);
+    // console.log(data);
     let names = data;
     let dropDown = d3.select("#selDataset")
 
@@ -25,19 +25,16 @@ function initPage() {
 
   //Get selected value
   let dropDownId = dropDown.property("value");
-  let dropDownText = dropDown.property("text");
+  //let dropDownText = dropDown.property("text");
 
-  console.log(dropDownText);
-  //d3.select('#Neighborhood option:checked').text();
-  //d3.select("#Neighborhood").text(dropDownText);
-  console.log(dropDownId);
+ 
   //Call chart functions
   createEducationBar(dropDownId, 'Education');
   createAgeBar(dropDownId, 'Age');
   createIncomeBar(dropDownId, 'Income');
   createCrimeChart(dropDownId);
   createCrimeBreakdown(dropDownId);
-  console.log("3");
+  
   });
 }
 
@@ -69,25 +66,41 @@ d3.json(geoFile).then(function(data) {
 
 
 function createCrimeChart(neighID){
-  let endpoint = CrimeData;
+  let endpoint = CrimeData + neighID;;
   d3.json(endpoint).then(function(data) {
     console.log(data);
 
+    let year_all = [];
+    let year = [];
+    let crime_count_all = [];
+    let crime_count = [];
+
+    data.forEach((n) => {
+      if (n.id==100) {
+        year_all.push(n.year);
+        crime_count_all.push(n.crime_counts);
+      } else {
+        year.push(n.year);
+        crime_count.push(n.crime_counts);
+      }
+    });
+    console.log(year);
+    console.log(crime_count);
 
     let trace1 = {
-      x: [1, 2, 3, 4],
-      y: [0, 2, 3, 5],
+      x: year_all,
+      y: crime_count_all,
       fill: 'tozeroy',
-      name: 'All Crime',
+      name: 'Minneapolis (all neighborhoods)',
       marker:{color:'#637899'},
       type: 'scatter'
     };
     
     let trace2 = {
-      x: [1, 2, 3, 4],
-      y: [3, 5, 1, 7],
+      x: year,
+      y: crime_count,
       fill: 'tonexty',
-      name: 'Minneapolis (all neighborhoods)',
+      name: 'Selected neighborhood',
       marker:{color:'#15305c'},
       type: 'scatter'
     };
@@ -98,6 +111,7 @@ function createCrimeChart(neighID){
     };
     
     Plotly.newPlot('Crime', data, layout);
+
   });
 }
 
@@ -125,7 +139,7 @@ function createIncomeBar(neighID){
   //Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
-    console.log(data);
+    
     let incomeData = data.filter(m => m.demographic == 'income');
     let incomePercent = [];
     let incomeCategory = [];
@@ -181,7 +195,7 @@ function createAgeBar(neighID){
   //Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
-    console.log(data);
+    
     let ageData = data.filter(i=> i.demographic == 'age');
 
     let agePercent = [];
@@ -237,7 +251,7 @@ function createEducationBar(neighID){
   //Get the selected neighborhood data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
-    console.log(data);
+    
     let educationData = data.filter(i=> i.demographic == 'education');
 
     let educationPercent = [];
