@@ -1,16 +1,21 @@
 .title {
-  color: rgb(6, 3, 94);
-  
+  color: #edeef0;
+  background-color: #15305c;
 }
 
 .neighborhood {
-  color: rgb(48, 46, 117);
-  
+  color: #637899  
+}
+.description {
+  color: #15305c;
+
+
 }
 
 body {
   padding: 0;
   margin: 0;
+
 }
 
 #map,
