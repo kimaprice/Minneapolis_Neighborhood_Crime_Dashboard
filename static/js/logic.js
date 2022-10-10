@@ -10,32 +10,33 @@ initPage();
 
 // ------------- Initialization Function --------------------//
 function initPage() {
-  console.log("test1")
-  d3.json(NeighborhoodData).then(function(data) {
-    // console.log(data);
-    let names = data;
-    let dropDown = d3.select("#selDataset")
+  // console.log("test1")
+  // //Gets data to populate dropdown of neighborhoods
+  // d3.json(NeighborhoodData).then(function(data) {
+  //   // console.log(data);
+  //   let names = data;
+  //   let dropDown = d3.select("#selDataset")
 
-    //Populate dropdown
-    names.forEach((n) => {
-      let opt = dropDown.append("option")
-      opt.text(n.neighborhood);
-      opt.property("value", n.neighborhoodID);
-    });
+  //   //Populate dropdown
+  //   names.forEach((n) => {
+  //     let opt = dropDown.append("option")
+  //     opt.text(n.neighborhood);
+  //     opt.property("value", n.neighborhoodID);
+  //   });
 
-  //Get selected value
-  let dropDownId = dropDown.property("value");
-  //let dropDownText = dropDown.property("text");
-
+  // //Get selected value
+  // let dropDownId = dropDown.property("value");
+  // //let dropDownText = dropDown.property("text");
+  d3.select('#Neighborhood').text('Minneapolis');
  
   //Call chart functions
-  createEducationBar(dropDownId, 'Education');
-  createAgeBar(dropDownId, 'Age');
-  createIncomeBar(dropDownId, 'Income');
-  createCrimeChart(dropDownId);
-  createCrimeBreakdown(dropDownId);
+  createEducationBar(100,'Minneapolis', 'Education');
+  createAgeBar(100,'Minneapolis', 'Age');
+  createIncomeBar(100,'Minneapolis', 'Income');
+  createCrimeChart(100,'Minneapolis');
+  createCrimeBreakdown(100),'Minneapolis';
   
-  });
+  // });
 }
 
 
@@ -46,7 +47,7 @@ let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
 // Creating the map object
 let myMap = L.map("map", {
   center: [44.9778, -93.2650],
-  zoom: 11
+  zoom: 10
 });
 
 // Adding the tile layer
@@ -57,7 +58,46 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Getting our GeoJSON data
 d3.json(geoFile).then(function(data) {
   // Creating a GeoJSON layer with the retrieved data
-  L.geoJson(data).addTo(myMap);
+  L.geoJson(data, {
+    style: function(feature) {
+      return {
+        color: "white",
+        // Call the chooseColor() function to decide which color to color our neighborhood. (The color is based on the borough.)
+        fillColor: '#15305c',
+        fillOpacity: 0.5,
+        weight: 1.5
+      };
+    },
+    // This is called on each feature.
+    onEachFeature: function(feature, layer) {
+      // Set the mouse events to change the map styling.
+      layer.on({
+        // When a user's mouse cursor touches a map feature, the mouseover event calls this function, which makes that feature's opacity change to 90% so that it stands out.
+        mouseover: function(event) {
+          layer = event.target;
+          layer.setStyle({
+            fillOpacity: 0.9
+
+          });
+        },
+        // When the cursor no longer hovers over a map feature (that is, when the mouseout event occurs), the feature's opacity reverts back to 50%.
+        mouseout: function(event) {
+          layer = event.target;
+          layer.setStyle({
+            fillOpacity: 0.5
+          });
+        },
+        // When a feature (neighborhood) is clicked, it enlarges to fit the screen.
+        click: function(event) {
+          myMap.fitBounds(event.target.getBounds());
+          console.log(event.target.feature.properties.BDNAME);
+          neighSelect(event.target.feature.properties.BDNAME);
+        }
+      });
+      // Giving each feature a popup with information that's relevant to it
+      layer.bindPopup("<h1>" + feature.properties.BDNAME + "</h1> <hr> <h2> Crime%: </h2>");
+    }
+  }).addTo(myMap);
 });
 
 
@@ -65,7 +105,7 @@ d3.json(geoFile).then(function(data) {
 // -------Neighborhood Crime Chart Functionality ----- //
 
 
-function createCrimeChart(neighID){
+function createCrimeChart(neighID, neighborhood){
   let endpoint = CrimeData + neighID;;
   d3.json(endpoint).then(function(data) {
     //console.log(data);
@@ -100,14 +140,14 @@ function createCrimeChart(neighID){
       x: year,
       y: crime_count,
       fill: 'tozeroy',
-      name: 'Selected neighborhood',
+      name: neighborhood,
       marker:{color:'#15305c'},
       type: 'scatter'
     };
     
     var data = [trace1, trace2];
     var layout = {
-      title: "Crime Rate",
+      title: neighborhood + " Crime Rate",
       xaxis:{dtick:1, nticks:4}
     };
     
@@ -116,7 +156,7 @@ function createCrimeChart(neighID){
   });
 }
 
-function createCrimeBreakdown(neighID){
+function createCrimeBreakdown(neighID, neighborhood){
   let endpoint = CrimeBreakdown + neighID;
   d3.json(endpoint).then(function(data) {
     console.log(data);
@@ -151,7 +191,7 @@ function createCrimeBreakdown(neighID){
 
     let plotDiv = document.getElementById('plot');
     let layout = {
-      title: 'Neighborhood Crime Breakdown',
+      title: neighborhood + " Crime Breakdown",
       xaxis:{dtick:1, nticks:4}
     }
     
@@ -162,7 +202,7 @@ function createCrimeBreakdown(neighID){
 
 // ------ Neighborhood Demographic Charts functionality ----- //
 //Function to create the Income chart
-function createIncomeBar(neighID){
+function createIncomeBar(neighID, neighborhood){
   //Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
@@ -193,7 +233,7 @@ function createIncomeBar(neighID){
       y: incomeCategory,
       type: 'bar',
       text: incomePercent,
-      name: 'neighborhood',
+      name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
     };
@@ -210,7 +250,8 @@ function createIncomeBar(neighID){
 
     var data = [trace1, trace2]
     var layout = {
-      barmode: 'group'
+      barmode: 'group',
+      title: 'Income Demographics'
     };
     //plot the bar graph
     Plotly.newPlot('Income', data, layout);
@@ -218,7 +259,7 @@ function createIncomeBar(neighID){
 }
 
 //Function to create the Age chart
-function createAgeBar(neighID){
+function createAgeBar(neighID, neighborhood){
   //Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
@@ -250,7 +291,7 @@ function createAgeBar(neighID){
       y: ageCategory,
       type: 'bar',
       text: agePercent,
-      name: 'neighborhood',
+      name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
     };
@@ -267,14 +308,15 @@ function createAgeBar(neighID){
 
     var data = [trace1, trace2]
     var layout = {
-      barmode: 'group'
+      barmode: 'group',
+      title: 'Age Demographics'
     };
     //plot the bar graph
     Plotly.newPlot('Age', data, layout);
   });
 }
 //Funciton to create the Education chart
-function createEducationBar(neighID){
+function createEducationBar(neighID, neighborhood){
   //Get the selected neighborhood data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
   d3.json(endpoint).then(function(data) {
@@ -306,7 +348,7 @@ function createEducationBar(neighID){
       y: educationCategory,
       type: 'bar',
       text: educationPercent,
-      name: 'neighborhood',
+      name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
     };
@@ -323,7 +365,8 @@ function createEducationBar(neighID){
 
     var data = [trace1, trace2]
     var layout = {
-      barmode: 'group'
+      barmode: 'group',
+      title: 'Education Demographics'
     };
 
     //plot the bar graph
@@ -331,12 +374,32 @@ function createEducationBar(neighID){
   });
 }
 
+function neighSelect(neighborhood){
+  d3.json(NeighborhoodData).then(function(data) {
+    //console.log(data);
+    let neighid = '';
+    let neighborhoodData = data.filter(i=> i.neighborhood == neighborhood);
+    neighborhoodData.forEach((n) => {
+        neighid = n.neighborhoodID;
+    });
+    //Call chart functions
+    d3.select('#Neighborhood').text(neighborhood);
+    createEducationBar(neighid, neighborhood, 'Education');
+    createAgeBar(neighid, neighborhood, 'Age');
+    createIncomeBar(neighid, neighborhood, 'Income');
+    createCrimeChart(neighid,  neighborhood);
+    createCrimeBreakdown(neighid,  neighborhood);
+      
+  });
+}
+
+
 
 //-------------  On DropDown Change function ---------------//
-function optionChanged(neighID){
-  createIncomeBar(neighID);
-  createAgeBar(neighID);
-  createEducationBar(neighID);
-  createCrimeChart(neighID);
-  createCrimeBreakdown(neighID);
-}
+// function optionChanged(neighID){
+//   createIncomeBar(neighID);
+//   createAgeBar(neighID);
+//   createEducationBar(neighID);
+//   createCrimeChart(neighID);
+//   createCrimeBreakdown(neighID);
+// }
