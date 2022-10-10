@@ -8,6 +8,7 @@ import json
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
+from sqlalchemy import or_
 
 # Define the PostgreSQL connection parameters
 username = 'postgres'  # Ideally this would come from config.py (or similar)
@@ -47,7 +48,7 @@ def getDemographicData(neighID):
     
     #Get Demo data for all Minneapolis
     sel = [demographicData.neighborhoodid, demoCat.demographic, demoCat.category, demographicData.percent]
-    demo_results = session.query(*sel).join(demographicData, demoCat.demoid == demographicData.demoid).filter(demographicData.neighborhoodid == neighID).all()
+    demo_results = session.query(*sel).join(demographicData, demoCat.demoid == demographicData.demoid).filter(or_(demographicData.neighborhoodid == neighID,demographicData.neighborhoodid == 100)).all()
     
     #Close the session
     session.close()
@@ -63,16 +64,11 @@ def getDemographicData(neighID):
         dict["percent"] = demographicData_percent
         demo_list.append(dict)
     
-    # data = []
-    # data.append({"neighborhoodList": neighborhood_list})
-    # data.append({"crimeData": crime_list})
-    # data.append({"demoList": demo_list})
-    # print("data gathered")
-
     # Neighborhood crime info
     return jsonify(demo_list)
 
-    # Route to gather data from PostgreSQL DB: minne_crime_db
+
+# Route to gather data from PostgreSQL DB: minne_crime_db
 @app.route("/getNeighborhoods")
 def getNeighborhoods():
     print("Getting data")
@@ -96,7 +92,8 @@ def getNeighborhoods():
     # Neighborhood crime info
     return jsonify(neighborhood_list)
 
-    # Route to gather data from PostgreSQL DB: minne_crime_db
+
+# Route to gather crime data from PostgreSQL DB: minne_crime_db
 @app.route("/getCrimeData")
 def getCrimeData():
     print("Getting data")
@@ -128,6 +125,7 @@ def getCrimeData():
 
     # Neighborhood crime info
     return jsonify(crime_list)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
