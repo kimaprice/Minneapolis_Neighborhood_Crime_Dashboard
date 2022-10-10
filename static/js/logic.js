@@ -68,7 +68,7 @@ d3.json(geoFile).then(function(data) {
 function createCrimeChart(neighID){
   let endpoint = CrimeData + neighID;;
   d3.json(endpoint).then(function(data) {
-    console.log(data);
+    //console.log(data);
 
     let year_all = [];
     let year = [];
@@ -84,13 +84,13 @@ function createCrimeChart(neighID){
         crime_count.push(n.crime_counts);
       }
     });
-    console.log(year);
-    console.log(crime_count);
+    //console.log(year);
+    //console.log(crime_count);
 
     let trace1 = {
       x: year_all,
       y: crime_count_all,
-      fill: 'tozeroy',
+      fill: 'tonexty',
       name: 'Minneapolis (all neighborhoods)',
       marker:{color:'#637899'},
       type: 'scatter'
@@ -99,7 +99,7 @@ function createCrimeChart(neighID){
     let trace2 = {
       x: year,
       y: crime_count,
-      fill: 'tonexty',
+      fill: 'tozeroy',
       name: 'Selected neighborhood',
       marker:{color:'#15305c'},
       type: 'scatter'
@@ -107,7 +107,8 @@ function createCrimeChart(neighID){
     
     var data = [trace1, trace2];
     var layout = {
-      title: "Crime Rate"
+      title: "Crime Rate",
+      xaxis:{dtick:1, nticks:4}
     };
     
     Plotly.newPlot('Crime', data, layout);
@@ -116,20 +117,46 @@ function createCrimeChart(neighID){
 }
 
 function createCrimeBreakdown(neighID){
-  let endpoint = CrimeBreakdown;
+  let endpoint = CrimeBreakdown + neighID;
+  d3.json(endpoint).then(function(data) {
+    console.log(data);
+    let year = [];
+    let offense_category = [];
+    let crime_count = [];
+    let current_offense = '';
+    let traces = [];
+
+    data.forEach((n) => {
+      if (n.offense_cat==current_offense) {
+        crime_count.push(n.crime_counts);
+        offense_category.push(n.offense_cat);
+        year.push(n.year);
+      } 
+      else {
+        if (crime_count.length==0) {
+          current_offense = n.offense_cat;
+          crime_count.push(n.crime_counts);
+          offense_category.push(n.offense_cat);
+        year.push(n.year);
+        } else {
+        traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+        crime_count = [];
+        year = [];
+        current_offense = n.offense_cat;
+        }
+      }
+    });
+  
+    console.log(traces);
 
     let plotDiv = document.getElementById('plot');
-    let traces = [
-      {x: [1,2,3], y: [2,1,4], stackgroup: 'one', marker:{color:'#3f7551'}},
-      {x: [1,2,3], y: [1,1,2], stackgroup: 'one', marker:{color:'#15305c'}},
-      {x: [1,2,3], y: [3,0,2], stackgroup: 'one', marker:{color:'#637899'}}
-    ];
-
     let layout = {
-      title: 'Neighborhood Crime Breakdown'
+      title: 'Neighborhood Crime Breakdown',
+      xaxis:{dtick:1, nticks:4}
     }
     
     Plotly.newPlot('CrimeBreakdown', traces, layout);
+  });
 }
 
 

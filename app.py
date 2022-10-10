@@ -140,26 +140,23 @@ def getCrimeBreakdown(neighid):
     # Open a session
     session = Session(engine)
 
-    #Get Crime data for all Minneapolis
-    sel = [neighborhoodData.neighborhoodid, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
-    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodid == crimeData.neighborhoodid).all()
-  
+    #Get Crime breakdown for the selected neighborhood
+    sel = [crimeData.year, crimeData.offense_cat, func.sum(crimeData.crime_count).label('crimetotal')]
+    crime_results = session.query(*sel).filter(and_(crimeData.neighborhoodid == neighid, crimeData.year >= 2019)).group_by(crimeData.year, crimeData.offense_cat).order_by(crimeData.offense_cat, crimeData.year).all()
+
+
     #Close the session
     session.close()
 
     #Put crime data into a list of dictionaries
     crime_list = []
     for record in crime_results:
-        (neighborhoodData_neighborhoodid, neighborhoodData_neighborhood, crimeData_occurred_date, crimeData_offense_cat, crimeData_offense, crimeData_latitude, crimeData_longitude, crimeData_crime_count) = record
-        dict = {}
-        dict["neighborhoodID"] = neighborhoodData_neighborhoodid
-        dict["neighborhood"] = neighborhoodData_neighborhood
-        dict["offense_cat"] = crimeData_offense_cat
-        dict["crime_count"] = crimeData_crime_count
-        dict["occured_date"] = crimeData_occurred_date
-        dict["offense"] = crimeData_offense
-        dict["latitude"] = crimeData_latitude
-        dict["longitude"] = crimeData_longitude
+        (crimeData_year, crimeData_offense_cat, crimeData_crimetotal) = record
+        dict={}
+        dict['id']=neighid
+        dict['year']= crimeData_year
+        dict['crime_counts']= crimeData_crimetotal
+        dict['offense_cat']= crimeData_offense_cat
         crime_list.append(dict)
 
 
