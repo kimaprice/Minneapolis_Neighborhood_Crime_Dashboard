@@ -1,3 +1,8 @@
+#nav {
+  color: #edeef0;
+  background-color: #15305c;
+}
+
 .title {
   color: #edeef0;
   background-color: #15305c;
@@ -23,6 +28,14 @@
 .description {
   color: #15305c;
   text-indent: 1ch;
+}
+
+.Demographics {
+  color: #637899;
+  background-color: #15305c;
+  font-size: medium;
+  font-style: italic;
+  text-indent: 3ch;
 }
 
 body {

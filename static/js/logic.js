@@ -11,52 +11,36 @@ initPage();
 
 // ------------- Initialization Function --------------------//
 function initPage() {
-  // console.log("test1")
-  // //Gets data to populate dropdown of neighborhoods
-  // d3.json(NeighborhoodData).then(function(data) {
-  //   // console.log(data);
-  //   let names = data;
-  //   let dropDown = d3.select("#selDataset")
 
-  //   //Populate dropdown
-  //   names.forEach((n) => {
-  //     let opt = dropDown.append("option")
-  //     opt.text(n.neighborhood);
-  //     opt.property("value", n.neighborhoodID);
-  //   });
-
-  // //Get selected value
-  // let dropDownId = dropDown.property("value");
-  // //let dropDownText = dropDown.property("text");
+  //Set the chart header to Minneapolis for load
   d3.select('#Neighborhood').text('Minneapolis');
 
-  //Call chart functions
+  //Call chart functions on first load to contain Minneapolis (all neighborhoods) Data
   createEducationBar(100,'Minneapolis', 'Education');
   createAgeBar(100,'Minneapolis', 'Age');
   createIncomeBar(100,'Minneapolis', 'Income');
   createCrimeChart(100,'Minneapolis');
-  createCrimeBreakdown(100),'Minneapolis';
-  
-  // });
+  //createCrimeBreakdown(100),'Minneapolis';
+
 }
 
 
-// ------ Map Functionality ----- //
+// ------ Create Map and load Minneapolis geojson.  Attach functionality for selecting a neighborhood. ----- //
+// Get the GeoJson from file
 let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
 
-
-// Creating the map object
+// Creating the map object cenetered over Minneapolis
 let myMap = L.map("map", {
   center: [44.9778, -93.2650],
   zoom: 11
 });
 
-// Adding the tile layer
+// Adding the tile layer using open street map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-// Getting our GeoJSON data
+// Add the geojson layer and functionality for hover and click
 d3.json(geoFile).then(function(data) {
   // Creating a GeoJSON layer with the retrieved data
   L.geoJson(data, {
@@ -73,7 +57,7 @@ d3.json(geoFile).then(function(data) {
     onEachFeature: function(feature, layer) {
       // Set the mouse events to change the map styling.
       layer.on({
-        // When a user's mouse cursor touches a map feature, the mouseover event calls this function, which makes that feature's opacity change to 90% so that it stands out.
+        // When a user's mouse cursor touches a map feature, the opacity change to 90% so that it stands out and the popup layer is opened to show which neighborhood it is.
         mouseover: function(event) {
           layer = event.target;
           layer.setStyle({
@@ -81,7 +65,7 @@ d3.json(geoFile).then(function(data) {
           });
           layer.openPopup();
         },
-        // When the cursor no longer hovers over a map feature (that is, when the mouseout event occurs), the feature's opacity reverts back to 50%.
+        // When the cursor no longer hovers over a map feature the feature's opacity reverts back to 50% and the popup closes
         mouseout: function(event) {
           layer = event.target;
           layer.setStyle({
@@ -89,14 +73,13 @@ d3.json(geoFile).then(function(data) {
           });
           layer.closePopup();
         },
-        // When a feature (neighborhood) is clicked, it enlarges to fit the screen.
+        // When a feature (neighborhood) is clicked, it calls the function to redraw all of the charts and populate various components with the neighborhood data
         click: function(event) {
-          console.log(event.target.feature.properties.BDNAME);
           neighSelect(event.target.feature.properties.BDNAME);
         }
         
       });
-      // Giving each feature a popup with information that's relevant to it
+      // Giving each feature a popup with the neighborhood name
       layer.bindPopup("<h5>" + feature.properties.BDNAME);
     }
   }).addTo(myMap);
@@ -104,15 +87,18 @@ d3.json(geoFile).then(function(data) {
 
 // -------Neighborhood Crime Chart Functionality ----- //
 function createCrimeChart(neighID, neighborhood){
-  let endpoint = CrimeData + neighID;;
+  //add the neighbrohood id to the endpoint
+  let endpoint = CrimeData + neighID;
+  //call the endpoint and get the crime data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
-    //console.log(data);
 
+    //initializing arrays to store data for area chart
     let year_all = [];
     let year = [];
     let crime_count_all = [];
     let crime_count = [];
 
+    //Looping thorugh data to pull out the values for each array
     data.forEach((n) => {
       if (n.id==100) {
         year_all.push(n.year);
@@ -122,9 +108,8 @@ function createCrimeChart(neighID, neighborhood){
         crime_count.push(n.crime_counts);
       }
     });
-    //console.log(year);
-    //console.log(crime_count);
 
+    //Setting up trace for Minneaplis (all neighborhoods)
     let trace1 = {
       x: year_all,
       y: crime_count_all,
@@ -134,6 +119,7 @@ function createCrimeChart(neighID, neighborhood){
       type: 'scatter'
     };
     
+    //Setting up trace for selected neighborhood
     let trace2 = {
       x: year,
       y: crime_count,
@@ -143,12 +129,19 @@ function createCrimeChart(neighID, neighborhood){
       type: 'scatter'
     };
     
+    //Create array containing both traces to send to newPlot function
     var data = [trace1, trace2];
+
+    //Setup layout to include title and define how many ticks to show
     var layout = {
       title: neighborhood + " Crime Rate",
-      xaxis:{dtick:1, nticks:4}
+      xaxis:{dtick:1, nticks:4},
+      legend: {"orientation": "h", 
+      //x: 0.1, y: 1.2
+    }
     };
     
+    //Drawing chart in 'Crime' div
     Plotly.newPlot('Crime', data, layout);
 
   });
@@ -248,7 +241,8 @@ function createIncomeBar(neighID, neighborhood){
     var layout = {
       barmode: 'group',
       title: 'Income Demographics',
-      yaxis: {automargin: true}
+      yaxis: {automargin: true},
+      legend: {"orientation": "h"}
     };
     //plot the bar graph
     Plotly.newPlot('Income', data, layout);
@@ -305,7 +299,8 @@ function createAgeBar(neighID, neighborhood){
     var layout = {
       barmode: 'group',
       title: 'Age Demographics',
-      yaxis: {automargin: true}
+      yaxis: {automargin: true},
+      legend: {"orientation": "h"}
     };
     //plot the bar graph
     Plotly.newPlot('Age', data, layout);
@@ -361,7 +356,8 @@ function createEducationBar(neighID, neighborhood){
     var layout = {
       barmode: 'group',
       title: 'Education Demographics',
-      yaxis: {automargin: true}
+      yaxis: {automargin: true},
+      legend: {"orientation": "h"}
     };
 
     //plot the bar graph
@@ -408,3 +404,20 @@ function neighSelect(neighborhood){
   });
   });
 }
+
+$(document).ready(function(){
+  activaTab('aaa');
+});
+
+function activaTab(tab){
+  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+};
+
+// $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+   
+//   var target = $(e.target).attr("href") // activated tab
+//  if(target=="#tab2")
+//  {
+//         //call the corresponding function which generates that plot
+//  }
+// });
