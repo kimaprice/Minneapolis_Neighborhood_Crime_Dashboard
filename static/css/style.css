@@ -1,16 +1,28 @@
 .title {
   color: #edeef0;
   background-color: #15305c;
+  text-indent: 1ch;
+}
+.dashbaord {
+  height: 400px;
 }
 
 .Neighborhood {
   color: #edeef0;
   background-color: #15305c;
+  font-size: x-large;
+  text-indent: 1ch;
+}
+.Percent {
+  color: #edeef0;
+  background-color: #15305c;
+  font-size: medium;
+  font-style: italic;
+  text-indent: 3ch;
 }
 .description {
   color: #15305c;
-
-
+  text-indent: 1ch;
 }
 
 body {
@@ -19,21 +31,22 @@ body {
 
 }
 
-#map,
-body,
-html {
-  height: 100%;
+#map {
+  position: relative;
+  border: 1px solid black;
+  border-radius: 8px;
+  height: 400px;  /* or as desired */
+  width: 100%;  /* This means "100% of the width of its container", the .col-md-8 */
 }
-
-html, body, .container-fluid, #map_canvas {
+/* html, body, .container-fluid, #map_canvas {
   height:100%;
-}
-.container-fluid {
+} */
+/* .container-fluid {
   width:100%;
   position:absolute;
   top:0;
   padding:0;
-}
+} */
 #map_canvas {
   border-top:50px solid #fff;
   border-bottom:20px solid #fff;
