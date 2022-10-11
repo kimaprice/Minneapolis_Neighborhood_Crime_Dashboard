@@ -163,6 +163,31 @@ def getCrimeBreakdown(neighid):
     # Neighborhood crime info
     return jsonify(crime_list)
 
+# Route to gather high level crime data for neighborhood and Minneapolis from PostgreSQL DB: minne_crime_db
+@app.route("/percent")
+def percent():
+    print("percent")
+    # Open a session
+    session = Session(engine)
+
+    #Get Crime data for all selected neighborhood
+    sel = [neighborhoodData.neighborhood, func.sum(crimeData.crime_count).label('crimetotal')]
+    crime_results = session.query(*sel).join(neighborhoodData, neighborhoodData.neighborhoodid == crimeData.neighborhoodid).filter(crimeData.year >= 2019).group_by(neighborhoodData.neighborhood).all()
+
+    #Close the session
+    session.close()
+
+    percent = []
+
+    #Put into a list of dictionaries
+    for neighborhoodData_neighborhood, crimeData_crimetotal in crime_results:
+        dict={}
+        dict['neighborhood']= neighborhoodData_neighborhood
+        dict['crime_counts']= crimeData_crimetotal
+        percent.append(dict)
+
+    # Neighborhood crime info
+    return jsonify(percent)
 
 # Route to gather fuld crimedata table from PostgreSQL DB: minne_crime_db
 @app.route("/DetailedCrimeData")

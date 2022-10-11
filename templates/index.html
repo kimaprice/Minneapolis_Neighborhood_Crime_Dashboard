@@ -20,6 +20,13 @@
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
     crossorigin=""></script>
 
+    <!--math.js Library-->
+    <script src="https://unpkg.com/mathjs@11.2.1/lib/browser/math.js"></script>
+
+   <!--arraygeous JS Library-->
+    <script src="https://unpkg.com/arraygeous@0.1.24/build/arraygeous.min.js"></script>
+
+
     <!-- D3 library -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
@@ -27,48 +34,48 @@
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
 
-  
-
-
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
+    <div class="container" id="dashboard">
+      <div class="row h-5">
             <h1 class="title"> Minneapolis Neighborhood Demographic and Crime Data</h1>
         </div>
-        <div class="row">
+        <div class="row h-5">
           <p class="description">Description of the dashboard goes here</p>
         </div>
-        <!-- <div class="row">
-          <div class="col-6">Dropdown:</div>
-          <div class="col-6">
-            <select id="selDataset" onchange="optionChanged(this.value)"></select>
-          </div>
-        </div> -->
-        <div class="row h-100">
+        <div class="row h-90">
           <div class="col-8">
-            <div class="row h-25" id="map">
+            <div class="row" id="map">
             </div>
-            <div class="row" id="Crime">
+            <div class="row h-25">
+              <div id="Crime"></div>
             </div>
-            <div class="row" id="CrimeBreakdown">
+            <div class="row h-25">
+              <div id="CrimeBreakdown"></div>
             </div>
           </div>
           <div class="col-4" id="DemoVisualizations">
-            <div class="row Neighborhood" id="Neighborhood">
+            <div class="row h-5 Neighborhood" id="Neighborhood"></div>
+            <div class="row h-5 Percent" id="Percent"></div>
+            <div class="row h-30 d-inline-block">
+              <div class="col">
+                <div id="Age" class="responsive-plot"></div>
+              </div>
             </div>
-            <div class="row">
-              <div class="col h-100" id="Age"></div>
+            <div class="row h-30 d-inline-block">
+              <div class="col">
+                <div id="Income" class="responsive-plot"></div>
+              </div>
             </div>
-            <div class="row">
-              <div class="col h-100" id="Income"></div>
-            </div>
-            <div class="row">
-              <div class="col h-100" id="Education"></div>
+            <div class="row h-30 d-inline-block">
+              <div class="col">
+                <div id="Education" class="responsive-plot"></div>
+              </div>
             </div>
           </div>
         </div>
-
+      </div>
+    </div>
     <!-- JavaScript file -->
     <script type="text/javascript" src="static/js/logic.js"></script> 
 

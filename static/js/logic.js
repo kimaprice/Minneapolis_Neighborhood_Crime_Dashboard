@@ -4,6 +4,7 @@ const NeighborhoodData = "/getNeighborhoods";
 const CrimeData = "/getCrimeData/";
 const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
+const PercentData = "/percent";
 
 initPage();
 
@@ -28,7 +29,7 @@ function initPage() {
   // let dropDownId = dropDown.property("value");
   // //let dropDownText = dropDown.property("text");
   d3.select('#Neighborhood').text('Minneapolis');
- 
+
   //Call chart functions
   createEducationBar(100,'Minneapolis', 'Education');
   createAgeBar(100,'Minneapolis', 'Age');
@@ -47,7 +48,7 @@ let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
 // Creating the map object
 let myMap = L.map("map", {
   center: [44.9778, -93.2650],
-  zoom: 10
+  zoom: 11
 });
 
 // Adding the tile layer
@@ -77,8 +78,8 @@ d3.json(geoFile).then(function(data) {
           layer = event.target;
           layer.setStyle({
             fillOpacity: 0.9
-
           });
+          layer.openPopup();
         },
         // When the cursor no longer hovers over a map feature (that is, when the mouseout event occurs), the feature's opacity reverts back to 50%.
         mouseout: function(event) {
@@ -86,25 +87,22 @@ d3.json(geoFile).then(function(data) {
           layer.setStyle({
             fillOpacity: 0.5
           });
+          layer.closePopup();
         },
         // When a feature (neighborhood) is clicked, it enlarges to fit the screen.
         click: function(event) {
-          myMap.fitBounds(event.target.getBounds());
           console.log(event.target.feature.properties.BDNAME);
           neighSelect(event.target.feature.properties.BDNAME);
         }
+        
       });
       // Giving each feature a popup with information that's relevant to it
-      layer.bindPopup("<h1>" + feature.properties.BDNAME + "</h1> <hr> <h2> Crime%: </h2>");
+      layer.bindPopup("<h5>" + feature.properties.BDNAME);
     }
   }).addTo(myMap);
 });
 
-
-
 // -------Neighborhood Crime Chart Functionality ----- //
-
-
 function createCrimeChart(neighID, neighborhood){
   let endpoint = CrimeData + neighID;;
   d3.json(endpoint).then(function(data) {
@@ -232,7 +230,6 @@ function createIncomeBar(neighID, neighborhood){
       x: incomePercent,
       y: incomeCategory,
       type: 'bar',
-      text: incomePercent,
       name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
@@ -242,7 +239,6 @@ function createIncomeBar(neighID, neighborhood){
       x: minnePercent,
       y: minneCategory,
       type: 'bar',
-      text: minnePercent,
       name: 'Minneapolis (all neighborhoods)',
       marker:{color:'#15305c'},
       orientation: 'h'
@@ -251,7 +247,8 @@ function createIncomeBar(neighID, neighborhood){
     var data = [trace1, trace2]
     var layout = {
       barmode: 'group',
-      title: 'Income Demographics'
+      title: 'Income Demographics',
+      yaxis: {automargin: true}
     };
     //plot the bar graph
     Plotly.newPlot('Income', data, layout);
@@ -290,7 +287,6 @@ function createAgeBar(neighID, neighborhood){
       x: agePercent,
       y: ageCategory,
       type: 'bar',
-      text: agePercent,
       name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
@@ -300,7 +296,6 @@ function createAgeBar(neighID, neighborhood){
       x: minnePercent,
       y: minneCategory,
       type: 'bar',
-      text: minnePercent,
       name: 'Minneapolis (all neighborhoods)',
       marker:{color:'#15305c'},
       orientation: 'h'
@@ -309,7 +304,8 @@ function createAgeBar(neighID, neighborhood){
     var data = [trace1, trace2]
     var layout = {
       barmode: 'group',
-      title: 'Age Demographics'
+      title: 'Age Demographics',
+      yaxis: {automargin: true}
     };
     //plot the bar graph
     Plotly.newPlot('Age', data, layout);
@@ -347,7 +343,6 @@ function createEducationBar(neighID, neighborhood){
       x: educationPercent,
       y: educationCategory,
       type: 'bar',
-      text: educationPercent,
       name: neighborhood,
       marker:{color:'#637899'},
       orientation: 'h'
@@ -357,7 +352,6 @@ function createEducationBar(neighID, neighborhood){
       x: minnePercent,
       y: minneCategory,
       type: 'bar',
-      text: minnePercent,
       name: 'Minneapolis (all neighborhoods)',
       marker:{color:'#15305c'},
       orientation: 'h'
@@ -366,7 +360,8 @@ function createEducationBar(neighID, neighborhood){
     var data = [trace1, trace2]
     var layout = {
       barmode: 'group',
-      title: 'Education Demographics'
+      title: 'Education Demographics',
+      yaxis: {automargin: true}
     };
 
     //plot the bar graph
@@ -382,24 +377,34 @@ function neighSelect(neighborhood){
     neighborhoodData.forEach((n) => {
         neighid = n.neighborhoodID;
     });
+
+    // get percent of Minneapolis crime for selected neighborhood
+    let endpoint = PercentData;
+    d3.json(endpoint).then(function(data) {
+      //console.log(data);
+      let allCrime = [];
+      let Crime = [];
+      //Get array of crime counts and array containing specific neighborhood crime count
+     data.forEach((n) => {
+          allCrime.push(n.crime_counts);
+          if (n.neighborhood == neighborhood){
+            Crime.push(n.crime_counts);
+          }
+      });
+  
+      let crimeSum = arr.max(arr.cumsum(allCrime));
+      Crime.push(crimeSum);
+   
+      let percent = arr.min(Crime)/arr.max(Crime)*100;
+
     //Call chart functions
-    d3.select('#Neighborhood').text(neighborhood);
+    d3.select('#Neighborhood').text("Neighborhood: " + neighborhood);
+    d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 1/2018 to 8/2022");
     createEducationBar(neighid, neighborhood, 'Education');
     createAgeBar(neighid, neighborhood, 'Age');
     createIncomeBar(neighid, neighborhood, 'Income');
     createCrimeChart(neighid,  neighborhood);
     createCrimeBreakdown(neighid,  neighborhood);
-      
+  });
   });
 }
-
-
-
-//-------------  On DropDown Change function ---------------//
-// function optionChanged(neighID){
-//   createIncomeBar(neighID);
-//   createAgeBar(neighID);
-//   createEducationBar(neighID);
-//   createCrimeChart(neighID);
-//   createCrimeBreakdown(neighID);
-// }
