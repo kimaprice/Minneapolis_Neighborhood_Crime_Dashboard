@@ -39,6 +39,12 @@ Schema for database:
  1. Use this test queries in ``Resources/DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
  
 # Dashboard Use
+ * Selections to view a neighborhood's crime statistics can be made either from clicking the map or drop-down
+ * Graphs/Bar charts will update to show relevant information for a selected neighborhood
+ * "Age", "Income", "Education", tabs select a bar chart to view
 
-# Dahsboard Components
 
+# Dashboard Components
+ * Clickable map, created by using a geoJson, displays neighborhoods in the Minneapolis area
+ * Bar charts displaying statistics/demographics for a selected neighborhood vs. the whole Minneapolis area
+ * Graph showing crime counts per year for a selected neighborhood vs. the whole Minneapolis area
