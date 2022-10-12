@@ -1,6 +1,5 @@
 from flask import Flask, render_template, redirect, jsonify
 
-
 #Import json
 import json
 
@@ -13,10 +12,10 @@ from sqlalchemy import func
 from sqlalchemy import and_
 
 # Define the PostgreSQL connection parameters
-username = 'postgres'  # Ideally this would come from config.py (or similar)
-password = 'bootcamp'  # Ideally this would come from config.py (or similar)
+username = 'postgres'  
+password = 'bootcamp'  
 database_name = 'minne_crime_db' 
-port_number = '5432' # Check your own port number! It's probably 5432, but it might be different!
+port_number = '5432' 
 connection_string = f'postgresql://{username}:{password}@localhost:{port_number}/{database_name}'
 
 # Connect to the SQL database
@@ -34,14 +33,14 @@ neighborhoodData = base.classes.neighborhooddata
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
 
-# Route to render index.html template
+###### Route to render index.html template ######
 @app.route('/')
 def index():
     print("Loading index.html")
 
     return render_template('index.html')
 
-# Route to gather data from PostgreSQL DB: minne_crime_db
+###### Route to gather demograhic data for a specified neighborhood ######
 @app.route("/getDemographicData/<neighID>")
 def getDemographicData(neighID):
     print("Getting data")
@@ -70,7 +69,7 @@ def getDemographicData(neighID):
     return jsonify(demo_list)
 
 
-# Route to gather data from PostgreSQL DB: minne_crime_db
+###### Route to gather data the list of neighborhoods with ids ######
 @app.route("/getNeighborhoods")
 def getNeighborhoods():
     print("Getting data")
@@ -94,7 +93,7 @@ def getNeighborhoods():
     # Neighborhood crime info
     return jsonify(neighborhood_list)
 
-# Route to gather high level crime data for neighborhood and Minneapolis from PostgreSQL DB: minne_crime_db
+###### Route to gather high level crime data for specified neighborhood and Minneapolis ######
 @app.route("/getCrimeData/<neighid>")
 def getCrimeData(neighid):
     print("Getting data")
@@ -129,11 +128,10 @@ def getCrimeData(neighid):
         dict['crime_counts']= crimeData_crimetotal
         crime_list.append(dict)
 
-
     # Neighborhood crime info
     return jsonify(crime_list)
 
-# Route to gather crime breakdown for a neighborhood from PostgreSQL DB: minne_crime_db
+###### Route to gather crime breakdown for a specified neighborhood ######
 @app.route("/getCrimeBreakdown/<neighid>")
 def getCrimeBreakdown(neighid):
     print("Getting data")
@@ -143,7 +141,6 @@ def getCrimeBreakdown(neighid):
     #Get Crime breakdown for the selected neighborhood
     sel = [crimeData.year, crimeData.offense_cat, func.sum(crimeData.crime_count).label('crimetotal')]
     crime_results = session.query(*sel).filter(and_(crimeData.neighborhoodid == neighid, crimeData.year >= 2019)).group_by(crimeData.year, crimeData.offense_cat).order_by(crimeData.offense_cat, crimeData.year).all()
-
 
     #Close the session
     session.close()
@@ -163,7 +160,8 @@ def getCrimeBreakdown(neighid):
     # Neighborhood crime info
     return jsonify(crime_list)
 
-# Route to gather high level crime data for neighborhood and Minneapolis from PostgreSQL DB: minne_crime_db
+
+###### Route to gather crime counts for Minneapolis in order to calculate percents of crime ######
 @app.route("/percent")
 def percent():
     print("percent")
@@ -177,9 +175,8 @@ def percent():
     #Close the session
     session.close()
 
+    #Put into a list of dictionaries   
     percent = []
-
-    #Put into a list of dictionaries
     for neighborhoodData_neighborhood, crimeData_crimetotal in crime_results:
         dict={}
         dict['neighborhood']= neighborhoodData_neighborhood
@@ -189,7 +186,8 @@ def percent():
     # Neighborhood crime info
     return jsonify(percent)
 
-# Route to gather fuld crimedata table from PostgreSQL DB: minne_crime_db
+
+###### Route to gather full crimedata table ######
 @app.route("/DetailedCrimeData")
 def DetailedCrimeData():
     print("Getting data")

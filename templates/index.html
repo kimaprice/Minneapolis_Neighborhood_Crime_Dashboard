@@ -20,10 +20,10 @@
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
     crossorigin=""></script>
 
-    <!--math.js Library-->
+    <!-- math.js Library -->
     <script src="https://unpkg.com/mathjs@11.2.1/lib/browser/math.js"></script>
 
-   <!--arraygeous JS Library-->
+   <!-- arraygeous JS Library: library for math on an array -->
     <script src="https://unpkg.com/arraygeous@0.1.24/build/arraygeous.min.js"></script>
 
 
@@ -37,66 +37,81 @@
   </head>
   <body>
     <div class="container" id="dashboard">
+      <!-- Title Row -->
+      <div class="row h-5 title">
+        <h1> Minneapolis Neighborhood Demographic and Crime Data</h1>
+        <h4> 2019-2022</h4>
+      </div>
+      <!-- Description Row -->
       <div class="row h-5">
-            <h1 class="title"> Minneapolis Neighborhood Demographic and Crime Data</h1>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Enim nunc faucibus a pellentesque. Aliquam etiam erat velit scelerisque. Justo eget magna fermentum iaculis eu non diam phasellus vestibulum. Egestas integer eget aliquet nibh praesent tristique magna sit. Quisque non tellus orci ac. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Sit amet consectetur adipiscing elit duis tristique. Ornare lectus sit amet est placerat. Cursus mattis molestie a iaculis at erat pellentesque. Nunc congue nisi vitae suscipit tellus mauris. Imperdiet nulla malesuada pellentesque elit eget gravida cum sociis natoque. Facilisis magna etiam tempor orci eu lobortis elementum. Eget sit amet tellus cras. Vel elit scelerisque mauris pellentesque pulvinar pellentesque. Tempus imperdiet nulla malesuada pellentesque elit eget gravida cum sociis. Nibh praesent tristique magna sit amet purus gravida. Pretium lectus quam id leo in vitae turpis. Sed ullamcorper morbi tincidunt ornare. Non curabitur gravida arcu ac tortor dignissim convallis.
+        </p>
+        <p class="description">To use:  Select/click on a neighborhood on the map below.</p>
+      </div>  
+      <!-- Content Row 1: Left column (Map), Righ column (Demographics Charts) -->
+      <div class="row h-35">
+        <!-- Left column: Map -->
+        <div class="col-6">
+          <!-- Map Row -->
+
+          <div class="row" id="map"></div>
         </div>
-        <div class="row h-5">
-          <p class="description">Description of the dashboard goes here</p>
-        <div class="row h-90">
-          <div class="col-6">
-            <div class="row" id="map">
-            </div>
-            <div class="row h-25">
-                <!-- Crime Charts Nav tabs -->
-                <div class="container">
-                  <nav>
-                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                      <a class="nav-link active" id="nav-crime-tab" data-bs-toggle="tab" href="#nav-crime" role="tab" aria-controls="nav-crime" aria-selected="true">Crime Rates 2018-2022</a>
-                      <a class="nav-link" id="nav-breakdown-tab" data-bs-toggle="tab" href="#nav-breakdown" role="tab" aria-controls="nav-breakdown" aria-selected="false">Crime Breakdown by Offense</a>
-                    </div>
-                  </nav>
-                  <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-crime" role="tabpanel" aria-labelledby="nav-crome-tab">
-                      <div id="Crime" class="responsive-plot"></div>
-                    </div>
-                    <div class="tab-pane fade" id="nav-breakdown" role="tabpanel" aria-labelledby="nav-breakdown-tab">
-                      <div id="CrimeBreakdown" class="responsive-plot"></div>
-                    </div>
-                  </div>
+        <!-- Right column: Demographic Charts -->
+        <div class="col-6" id="DemoVisualizations">
+          <!-- Rows for Neighborhood name and percent information -->
+          <div class="row h-5 Neighborhood" id="Neighborhood"></div>
+          <div class="row h-5 Percent" id="Percent"></div>
+            <!-- Demographic Charts Nav tabs container -->
+            <div class="container">
+              <!-- Demograhpic Nav Tabs Definition -->
+              <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <a class="nav-link active" id="nav-age-tab" data-bs-toggle="tab" href="#nav-age" role="tab" aria-controls="nav-age" aria-selected="true">Age</a>
+                  <a class="nav-link" id="nav-income-tab" data-bs-toggle="tab" href="#nav-income" role="tab" aria-controls="nav-income" aria-selected="false">Income</a>
+                  <a class="nav-link" id="nav-education-tab" data-bs-toggle="tab" href="#nav-education" role="tab" aria-controls="nav-education" aria-selected="false">Education</a>
                 </div>
-            </div>
-          </div>
-          <div class="col-6" id="DemoVisualizations">
-            <div class="row h-5 Neighborhood" id="Neighborhood"></div>
-            <div class="row h-5 Percent" id="Percent"></div>
-            <div class="row h-5 Percent" id="Demographics">Demographics:</div>
-                <!-- Demographic Charts Nav tabs -->
-              <div class="container">
-                <nav>
-                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-link active" id="nav-age-tab" data-bs-toggle="tab" href="#nav-age" role="tab" aria-controls="nav-age" aria-selected="true">Age</a>
-                    <a class="nav-link" id="nav-income-tab" data-bs-toggle="tab" href="#nav-income" role="tab" aria-controls="nav-income" aria-selected="false">Income</a>
-                    <a class="nav-link" id="nav-education-tab" data-bs-toggle="tab" href="#nav-education" role="tab" aria-controls="nav-education" aria-selected="false">Education</a>
-                  </div>
-                </nav>
-                <div class="tab-content" id="nav-tabContent">
-                  <div class="tab-pane fade show active" id="nav-age" role="tabpanel" aria-labelledby="nav-age-tab">
-                    <div id="Age" class="responsive-plot"></div>
-                  </div>
-                  <div class="tab-pane fade" id="nav-income" role="tabpanel" aria-labelledby="nav-income-tab">
-                    <div id="Income" class="responsive-plot"></div>
-                  </div>
-                  <div class="tab-pane fade" id="nav-education" role="tabpanel" aria-labelledby="nav-education-tab">
-                    <div id="Education" class="responsive-plot"></div>
-                  </div>
+              </nav>
+              <!-- Demograhpic Nav Tab Contents -->
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-age" role="tabpanel" aria-labelledby="nav-age-tab">
+                  <div id="Age" class="responsive-plot"></div>
+                </div>
+                <div class="tab-pane fade" id="nav-income" role="tabpanel" aria-labelledby="nav-income-tab">
+                  <div id="Income" class="responsive-plot"></div>
+                </div>
+                <div class="tab-pane fade" id="nav-education" role="tabpanel" aria-labelledby="nav-education-tab">
+                  <div id="Education" class="responsive-plot"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      <!-- Content Row 2: Crime Charts-->
+      <div class="row h-45">
+        <!-- Crime Charts Nav tabs container -->
+        <div class="container">
+          <!-- Demograhpic Nav Tabs Definition -->
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-link active" id="nav-crime-tab" data-bs-toggle="tab" href="#nav-crime" role="tab" aria-controls="nav-crime" aria-selected="true">Crime Rates 2019-2022</a>
+              <a class="nav-link" id="nav-breakdown-tab" data-bs-toggle="tab" href="#nav-breakdown" role="tab" aria-controls="nav-breakdown" aria-selected="false">Crime Breakdown by Offense</a>
+            </div>
+          </nav>
+          <!-- Crime Chart Nav Tab Contents-->
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-crime" role="tabpanel" aria-labelledby="nav-crime-tab">
+              <div id="Crime" class="responsive-plot"></div>
+            </div>
+            <div class="tab-pane fade" id="nav-breakdown" role="tabpanel" aria-labelledby="nav-breakdown-tab">
+              <div id="CrimeBreakdown" class="responsive-plot"></div>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="row h-5 title">
+       Note: 2022 data is current through X date
+      </div>       
     </div>
-
 
 
     <!-- JavaScript file -->
