@@ -1,13 +1,12 @@
-//Minneapolis Neighborhood GeoJson filepath
-// set the endpoint URL
+// set the endpoint URLs
 const NeighborhoodData = "/getNeighborhoods";
 const CrimeData = "/getCrimeData/";
 const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
 const PercentData = "/percent";
 
+// call the page initialization function
 initPage();
-
 
 // ------------- Initialization Function --------------------//
 function initPage() {
@@ -20,7 +19,7 @@ function initPage() {
   createAgeBar(100,'Minneapolis', 'Age');
   createIncomeBar(100,'Minneapolis', 'Income');
   createCrimeChart(100,'Minneapolis');
-  //createCrimeBreakdown(100),'Minneapolis';
+  //createMinneCrimeBreakdown('Minneapolis)';
 
 }
 
@@ -77,7 +76,6 @@ d3.json(geoFile).then(function(data) {
         click: function(event) {
           neighSelect(event.target.feature.properties.BDNAME);
         }
-        
       });
       // Giving each feature a popup with the neighborhood name
       layer.bindPopup("<h5>" + feature.properties.BDNAME);
@@ -85,10 +83,13 @@ d3.json(geoFile).then(function(data) {
   }).addTo(myMap);
 });
 
-// -------Neighborhood Crime Chart Functionality ----- //
+// -------    Neighborhood Crime Chart Functionality    ----- //
+
+// function to create the crime chart for the selected neighborhood
 function createCrimeChart(neighID, neighborhood){
   //add the neighbrohood id to the endpoint
   let endpoint = CrimeData + neighID;
+
   //call the endpoint and get the crime data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
 
@@ -98,7 +99,7 @@ function createCrimeChart(neighID, neighborhood){
     let crime_count_all = [];
     let crime_count = [];
 
-    //Looping thorugh data to pull out the values for each array
+    //Looping thorugh data to pull out the values to push to each array
     data.forEach((n) => {
       if (n.id==100) {
         year_all.push(n.year);
@@ -136,9 +137,7 @@ function createCrimeChart(neighID, neighborhood){
     var layout = {
       title: neighborhood + " Crime Rate",
       xaxis:{dtick:1, nticks:4},
-      legend: {"orientation": "h", 
-      //x: 0.1, y: 1.2
-    }
+      legend: {"orientation": "h"}
     };
     
     //Drawing chart in 'Crime' div
@@ -147,58 +146,79 @@ function createCrimeChart(neighID, neighborhood){
   });
 }
 
+// function to create the stacked area charting showing the breakdown of total crime for a neighborhood into the offense categories
 function createCrimeBreakdown(neighID, neighborhood){
+  // add the neighbrohood id to the endpoint
   let endpoint = CrimeBreakdown + neighID;
+  
+  // call the endpoint and get the crime data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
     console.log(data);
+
+    //initializing arrays to store data for stacked area chart
     let year = [];
     let offense_category = [];
     let crime_count = [];
     let current_offense = '';
     let traces = [];
 
+    // Looping thorugh data to pull out the values to push to an array for each offense category, which then get added to the trace array for the stacked area chart
     data.forEach((n) => {
+      // if the current offense is the same as the previous,  add the count to the array for that offense category and year to the year array
       if (n.offense_cat==current_offense) {
         crime_count.push(n.crime_counts);
         offense_category.push(n.offense_cat);
         year.push(n.year);
       } 
+      // if the current offense is NOT the same as the previous....
       else {
+        // and it is the first value of the loop,  add the count to the array for that offense category and year to the year array 
         if (crime_count.length==0) {
           current_offense = n.offense_cat;
           crime_count.push(n.crime_counts);
           offense_category.push(n.offense_cat);
         year.push(n.year);
-        } else {
+        } 
+        // and it is NOT the first value of the loop,  push a trace to the group with the age array as the x value and the crime counts array as the y value
+        else {
         traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+        // reset the arrays to empty to prepare for the next offense category
         crime_count = [];
         year = [];
         current_offense = n.offense_cat;
         }
       }
     });
-  
-    console.log(traces);
 
-    let plotDiv = document.getElementById('plot');
+    // set layout for the chart to contain the title, set the number if ticks and move the legend to below the plot area
     let layout = {
       title: neighborhood + " Crime Breakdown",
-      xaxis:{dtick:1, nticks:4}
+      xaxis:{dtick:1, nticks:4},
+      legend: {"orientation": "h"}
     }
     
+    // let config = {responsive: true}
+
+    // Plot the chart in the 'CrimeBreakdown' div
     Plotly.newPlot('CrimeBreakdown', traces, layout);
+    
   });
 }
 
+// ------   Neighborhood Demographic Charts functionality   ----- //
 
-// ------ Neighborhood Demographic Charts functionality ----- //
-//Function to create the Income chart
+// Function to create the Income chart
 function createIncomeBar(neighID, neighborhood){
-  //Get the data by adding the neighID to endpoint
+  // Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
+
+  // call the endpoint and get the income demographic data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
     
+    // filter the data to only contain income data
     let incomeData = data.filter(m => m.demographic == 'income');
+
+    // initializing arrays to store data for income demographic bar chart
     let incomePercent = [];
     let incomeCategory = [];
     let incomeNeigh = [];
@@ -206,19 +226,25 @@ function createIncomeBar(neighID, neighborhood){
     let minneCategory = [];
     let minneNeigh = [];
 
+    // Loop through the dataset
     incomeData.forEach((n) => {
+
+      // if the neighbor hood id is 100 (Minneapolis), then push to the array for the minneapolis values
       if (n.neighborhoodID==100) {
         minnePercent.push(n.percent);
         minneCategory.push(n.category);
         minneNeigh.push(n.category);
 
-      } else {
+      } 
+      // if the neighbor hood id is NOT 100 (Minneapolis), then push to the array for the neighborhood values
+      else {
         incomePercent.push(n.percent);
         incomeCategory.push(n.category);
         incomeNeigh.push(n.category);
       }
     });
 
+    // populate the first trace with neighborhood values
     var trace1 = {
       x: incomePercent,
       y: incomeCategory,
@@ -228,6 +254,7 @@ function createIncomeBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // populate the second trace with Minneapolis values
     var trace2 = {
       x: minnePercent,
       y: minneCategory,
@@ -237,26 +264,41 @@ function createIncomeBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // create data array containing the 2 traces
     var data = [trace1, trace2]
+
+    // set the layout to a grouped bar chart with the title, horizontal legend, and automargins to make sure the bar labels are not cut off
     var layout = {
       barmode: 'group',
-      title: 'Income Demographics',
+      // title: 'Income Demographics',
       yaxis: {automargin: true},
-      legend: {"orientation": "h"}
+      legend: {"orientation": "h"},
+      margin: {
+        l: 20,
+        r: 20,
+        b: 20,
+        t: 20,
+        pad: 5
+      }
     };
-    //plot the bar graph
+
+    // plot the bar graph in the 'Income' div
     Plotly.newPlot('Income', data, layout);
   });
 }
 
 //Function to create the Age chart
 function createAgeBar(neighID, neighborhood){
-  //Get the data by adding the neighID to endpoint
+  // Get the data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
+
+  // call the endpoint and get the age demographic data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
     
+    // filter the data to only contain age data
     let ageData = data.filter(i=> i.demographic == 'age');
 
+    //initializing arrays to store data for age demographic bar chart
     let agePercent = [];
     let ageCategory = [];
     let ageNeigh = [];
@@ -264,19 +306,25 @@ function createAgeBar(neighID, neighborhood){
     let minneCategory = [];
     let minneNeigh = [];
 
+    // Loop through the dataset
     ageData.forEach((n) => {
+
+      // if the neighbor hood id is 100 (Minneapolis), then push to the array for the minneapolis values
       if (n.neighborhoodID==100) {
         minnePercent.push(n.percent);
         minneCategory.push(n.category);
         minneNeigh.push(n.category);
 
-      } else {
+      } 
+      // if the neighbor hood id is NOT 100 (Minneapolis), then push to the array for the neighborhood values
+      else {
         agePercent.push(n.percent);
         ageCategory.push(n.category);
         ageNeigh.push(n.category);
       }
     });
 
+    // populate the first trace with neighborhood values
     var trace1 = {
       x: agePercent,
       y: ageCategory,
@@ -286,6 +334,7 @@ function createAgeBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // populate the second trace with Minneapolis values
     var trace2 = {
       x: minnePercent,
       y: minneCategory,
@@ -295,25 +344,41 @@ function createAgeBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // create data array containing the 2 traces
     var data = [trace1, trace2]
+
+    // set the layout to a grouped bar chart with the title, horizontal legend, and automargins to make sure the bar labels are not cut off
     var layout = {
       barmode: 'group',
-      title: 'Age Demographics',
+      // title: 'Age Demographics',
       yaxis: {automargin: true},
-      legend: {"orientation": "h"}
+      legend: {"orientation": "h"},
+      margin: {
+        l: 20,
+        r: 20,
+        b: 20,
+        t: 20,
+        pad: 5
+      }
     };
-    //plot the bar graph
+
+    // plot the bar graph
     Plotly.newPlot('Age', data, layout);
   });
 }
-//Funciton to create the Education chart
+
+// Funciton to create the Education chart
 function createEducationBar(neighID, neighborhood){
-  //Get the selected neighborhood data by adding the neighID to endpoint
+  // Get the selected neighborhood data by adding the neighID to endpoint
   let endpoint = DemographicData + neighID;
+
+  // call the endpoint and education the income demographic data for the selcted neighborhood
   d3.json(endpoint).then(function(data) {
     
+    // filter the data to only contain education data
     let educationData = data.filter(i=> i.demographic == 'education');
 
+    //initializing arrays to store data for education demographic bar chart
     let educationPercent = [];
     let educationCategory = [];
     let educationNeigh = [];
@@ -321,19 +386,25 @@ function createEducationBar(neighID, neighborhood){
     let minneCategory = [];
     let minneNeigh = [];
 
+    // Loop through the dataset
     educationData.forEach((n) => {
+
+      // if the neighbor hood id is 100 (Minneapolis), then push to the array for the minneapolis values
       if (n.neighborhoodID==100) {
         minnePercent.push(n.percent);
         minneCategory.push(n.category);
         minneNeigh.push(n.category);
 
-      } else {
+      }
+      // if the neighbor hood id is NOT 100 (Minneapolis), then push to the array for the neighborhood values 
+      else {
         educationPercent.push(n.percent);
         educationCategory.push(n.category);
         educationNeigh.push(n.category);
       }
     });
 
+    // populate the first trace with neighborhood values
     var trace1 = {
       x: educationPercent,
       y: educationCategory,
@@ -343,6 +414,7 @@ function createEducationBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // populate the second trace with Minneapolis values
     var trace2 = {
       x: minnePercent,
       y: minneCategory,
@@ -352,72 +424,99 @@ function createEducationBar(neighID, neighborhood){
       orientation: 'h'
     };
 
+    // create data array containing the 2 traces
     var data = [trace1, trace2]
+
+    // set the layout to a grouped bar chart with the title, horizontal legend, and automargins to make sure the bar labels are not cut off
     var layout = {
       barmode: 'group',
-      title: 'Education Demographics',
+      // title: 'Education Demographics',
       yaxis: {automargin: true},
-      legend: {"orientation": "h"}
+      legend: {"orientation": "h"},
+      margin: {
+        l: 20,
+        r: 20,
+        b: 20,
+        t: 20,
+        pad: 5
+      }
     };
 
-    //plot the bar graph
+    // plot the bar graph
     Plotly.newPlot('Education', data, layout);
   });
 }
 
+// ------   Neighborhood Selection Functionality   ----- //
+
+// function to run when a neighborhood is clicked on the geojson layer of the map - receives neighborhood name
 function neighSelect(neighborhood){
+
+  // Calls the endpoint for the neighborhood data (neighborhood name and neighborhood id)
   d3.json(NeighborhoodData).then(function(data) {
-    //console.log(data);
+
+    //1.  Get the neighborhood id for the neighborhood so it can be passed in other functions
+
+    // initialize the variable to hold the id
     let neighid = '';
+
+    // filter the data to the enter with for the selected neighborhood
     let neighborhoodData = data.filter(i=> i.neighborhood == neighborhood);
+
+    // assign the id to the id for the slected neighborhood
     neighborhoodData.forEach((n) => {
         neighid = n.neighborhoodID;
     });
 
-    // get percent of Minneapolis crime for selected neighborhood
+    // 2.  calculate the percent of total crime in Minneapolis is in this neighborhood
+
+    // get endpoint for percent data
     let endpoint = PercentData;
+
+    // retrieve data from the end point for percent data
     d3.json(endpoint).then(function(data) {
-      //console.log(data);
+      
+      // initalize the arrays to store the data
       let allCrime = [];
       let Crime = [];
-      //Get array of crime counts and array containing specific neighborhood crime count
-     data.forEach((n) => {
-          allCrime.push(n.crime_counts);
-          if (n.neighborhood == neighborhood){
-            Crime.push(n.crime_counts);
-          }
+
+      // loop through the data
+      data.forEach((n) => {
+
+        // push the crime count to the array that will hold all of the crime counts - total array
+        allCrime.push(n.crime_counts);
+
+        // if the neighborhood is the selected neighborhood, add the crime count to the neighborhood specific array
+        if (n.neighborhood == neighborhood){
+          Crime.push(n.crime_counts);
+        }
       });
   
+      // use the arraygeous library to find the sum of the total crimes array.  This is done by first using the cumsum 
+      // to get the cumulative sum array and then using the max value to find the overall sum 
       let crimeSum = arr.max(arr.cumsum(allCrime));
+
+      // push the sum to the array containing the neighborhood valud
       Crime.push(crimeSum);
    
+      // calculate the percent by ussing arraygeous math to identify the max (total value) and min(neighborhood value) 
+      // and then divide the min by the max and muliple by 100
       let percent = arr.min(Crime)/arr.max(Crime)*100;
 
-    //Call chart functions
-    d3.select('#Neighborhood').text("Neighborhood: " + neighborhood);
-    d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 1/2018 to 8/2022");
-    createEducationBar(neighid, neighborhood, 'Education');
-    createAgeBar(neighid, neighborhood, 'Age');
-    createIncomeBar(neighid, neighborhood, 'Income');
-    createCrimeChart(neighid,  neighborhood);
-    createCrimeBreakdown(neighid,  neighborhood);
-  });
+    // 3.  Update the dashboard with the neighborhood specific information
+
+      // set the heading to the selected neighborhood name
+      d3.select('#Neighborhood').text(neighborhood + " Demographics:");
+
+      // set the percent text area to the selected neighborhood percent
+      d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 2019-2022");
+
+      // call the functions to redraw the charts with the selected neighborhood data
+      createEducationBar(neighid, neighborhood, 'Education');
+      createAgeBar(neighid, neighborhood, 'Age');
+      createIncomeBar(neighid, neighborhood, 'Income');
+      createCrimeChart(neighid,  neighborhood);
+      createCrimeBreakdown(neighid,  neighborhood);
+    });
   });
 }
-
-$(document).ready(function(){
-  activaTab('aaa');
-});
-
-function activaTab(tab){
-  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-};
-
-// $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-   
-//   var target = $(e.target).attr("href") // activated tab
-//  if(target=="#tab2")
-//  {
-//         //call the corresponding function which generates that plot
-//  }
-// });
