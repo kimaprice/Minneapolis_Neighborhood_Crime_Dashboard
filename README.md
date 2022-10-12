@@ -48,3 +48,10 @@ Schema for database:
  * Clickable map, created by using a geoJson, displays neighborhoods in the Minneapolis area
  * Bar charts displaying statistics/demographics for a selected neighborhood vs. the whole Minneapolis area
  * Graph showing crime counts per year for a selected neighborhood vs. the whole Minneapolis area
+
+# Javascript Libraries used:
+
+## math.js Library
+ * <script src="https://unpkg.com/mathjs@11.2.1/lib/browser/math.js"></script>
+## arraygeous JS Library: library for math on an array
+ * <script src="https://unpkg.com/arraygeous@0.1.24/build/arraygeous.min.js"></script>
