@@ -47,7 +47,7 @@ d3.json(geoFile).then(function(data) {
       return {
         color: "white",
         // Call the chooseColor() function to decide which color to color our neighborhood. (The color is based on the borough.)
-        fillColor: '#15305c',
+        fillColor: "#637899",
         fillOpacity: 0.5,
         weight: 1.5
       };
@@ -135,13 +135,21 @@ function createCrimeChart(neighID, neighborhood){
 
     //Setup layout to include title and define how many ticks to show
     var layout = {
-      title: neighborhood + " Crime Rate",
       xaxis:{dtick:1, nticks:4},
-      legend: {"orientation": "h"}
+      legend: {"orientation": "h"},
+      yaxis: {automargin: true},
+      margin: {
+        l: 30,
+        r: 20,
+        b: 30,
+        t: 40,
+        pad: 5
+      }
+      
     };
     
     //Drawing chart in 'Crime' div
-    Plotly.newPlot('Crime', data, layout);
+    Plotly.newPlot('nav-crime', data, layout);
 
   });
 }
@@ -192,15 +200,20 @@ function createCrimeBreakdown(neighID, neighborhood){
 
     // set layout for the chart to contain the title, set the number if ticks and move the legend to below the plot area
     let layout = {
-      title: neighborhood + " Crime Breakdown",
       xaxis:{dtick:1, nticks:4},
-      legend: {"orientation": "h"}
+      legend: {"orientation": "h"},
+      yaxis: {automargin: true},
+      margin: {
+        l: 30,
+        r: 20,
+        b: 30,
+        t: 40,
+        pad: 5
+      }
     }
-    
-    // let config = {responsive: true}
 
     // Plot the chart in the 'CrimeBreakdown' div
-    Plotly.newPlot('CrimeBreakdown', traces, layout);
+    Plotly.newPlot('nav-breakdown', traces, layout);
     
   });
 }
@@ -516,7 +529,16 @@ function neighSelect(neighborhood){
       createAgeBar(neighid, neighborhood, 'Age');
       createIncomeBar(neighid, neighborhood, 'Income');
       createCrimeChart(neighid,  neighborhood);
+      Plotly.Plots.resize(Crime);
       createCrimeBreakdown(neighid,  neighborhood);
+      
     });
   });
 }
+
+// $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
+//   var doc = $(".tab-pane.active .plotly-graph-div");
+//   for (var i = 0; i < doc.length; i++) {
+//       Plotly.relayout(doc[i], {autosize: true});
+//   }
+// })
