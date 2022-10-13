@@ -36,7 +36,7 @@
 
   </head>
   <body>
-    <div class="container" id="dashboard">
+    <div class="container responsive" id="dashboard">
       <!-- Title Row -->
       <div class="row h-5 title">
         <h1> Minneapolis Neighborhood Demographic and Crime Data</h1>
@@ -53,8 +53,7 @@
         <!-- Left column: Map -->
         <div class="col-6">
           <!-- Map Row -->
-
-          <div class="row" id="map"></div>
+          <div class="row" id="map"></div> 
         </div>
         <!-- Right column: Demographic Charts -->
         <div class="col-6" id="DemoVisualizations">
@@ -65,22 +64,17 @@
             <div class="container">
               <!-- Demograhpic Nav Tabs Definition -->
               <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                  <a class="nav-link active" id="nav-age-tab" data-bs-toggle="tab" href="#nav-age" role="tab" aria-controls="nav-age" aria-selected="true">Age</a>
-                  <a class="nav-link" id="nav-income-tab" data-bs-toggle="tab" href="#nav-income" role="tab" aria-controls="nav-income" aria-selected="false">Income</a>
-                  <a class="nav-link" id="nav-education-tab" data-bs-toggle="tab" href="#nav-education" role="tab" aria-controls="nav-education" aria-selected="false">Education</a>
+                <div class="nav nav-tabs" id="nav-tab1" role="tablist">
+                  <button class="nav-link active" id="nav-age-tab" data-bs-toggle="tab" type="button" href="#nav-age" role="tab" aria-controls="nav-age" aria-selected="true">Age</button>
+                  <button class="nav-link" id="nav-income-tab" data-bs-toggle="tab" type="button" href="#nav-income" role="tab" aria-controls="nav-income" aria-selected="false">Income</button>
+                  <button class="nav-link" id="nav-education-tab" data-bs-toggle="tab" type="button" href="#nav-education" role="tab" aria-controls="nav-education" aria-selected="false">Education</button>
                 </div>
               </nav>
               <!-- Demograhpic Nav Tab Contents -->
               <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-age" role="tabpanel" aria-labelledby="nav-age-tab">
-                  <div id="Age" class="responsive-plot"></div>
-                </div>
-                <div class="tab-pane fade" id="nav-income" role="tabpanel" aria-labelledby="nav-income-tab">
-                  <div id="Income" class="responsive-plot"></div>
-                </div>
+                <div class="tab-pane fade show active" id="nav-age" role="tabpanel" aria-labelledby="nav-age-tab"></div>
+                <div class="tab-pane fade" id="nav-income" role="tabpanel" aria-labelledby="nav-income-tab"></div>
                 <div class="tab-pane fade" id="nav-education" role="tabpanel" aria-labelledby="nav-education-tab">
-                  <div id="Education" class="responsive-plot"></div>
                 </div>
               </div>
             </div>
@@ -99,12 +93,8 @@
           </nav>
           <!-- Crime Chart Nav Tab Contents-->
           <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-crime" role="tabpanel" aria-labelledby="nav-crime-tab">
-              <div id="Crime" class="responsive-plot"></div>
-            </div>
-            <div class="tab-pane fade" id="nav-breakdown" role="tabpanel" aria-labelledby="nav-breakdown-tab">
-              <div id="CrimeBreakdown" class="responsive-plot"></div>
-            </div>
+            <div class="tab-pane fade show active" id="nav-crime" role="tabpanel" aria-labelledby="nav-crime-tab"></div>
+            <div class="tab-pane fade" id="nav-breakdown" role="tabpanel" aria-labelledby="nav-breakdown-tab"></div>
           </div>
         </div>
       </div>

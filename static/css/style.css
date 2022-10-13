@@ -7,13 +7,14 @@
   background-color: #637899;
 }
 
+.tab-pane {
+  width:auto;
+}
+
 .title {
   color: #edeef0;
   background-color: #15305c;
   text-indent: 1ch;
-}
-.dashbaord {
-  height: 400px;
 }
 
 .Neighborhood {
@@ -22,6 +23,7 @@
   font-size: x-large;
   text-indent: 1ch;
 }
+
 .Percent {
   color: #edeef0;
   background-color: #15305c;
@@ -29,6 +31,7 @@
   font-style: italic;
   text-indent: 3ch;
 }
+
 .description {
   color: #15305c;
   text-indent: 1ch;
@@ -42,35 +45,34 @@
   text-indent: 3ch;
 }
 
-body {
-  padding: 0;
-  margin: 0;
-
-}
-
 #map {
   position: relative;
   border: 1px solid black;
   border-radius: 8px;
-  height: 400px;  /* or as desired */
-  width: 100%;  /* This means "100% of the width of its container", the .col-md-8 */
+  height: 400px;
+  width: 100%;
 }
-/* html, body, .container-fluid, #map_canvas {
+
+html, #map_canvas {
   height:100%;
-} */
-/* .container-fluid {
+  padding:0;
+  margin: 0;
+}
+
+.container-fluid {
   width:100%;
   position:absolute;
   top:0;
   padding:0;
-} */
+}
+
 #map_canvas {
   border-top:50px solid #fff;
   border-bottom:20px solid #fff;
 }
-header {
-  height:50px;
-}
-footer {
-  height:20px;
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
 }

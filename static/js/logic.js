@@ -46,7 +46,6 @@ d3.json(geoFile).then(function(data) {
     style: function(feature) {
       return {
         color: "white",
-        // Call the chooseColor() function to decide which color to color our neighborhood. (The color is based on the borough.)
         fillColor: "#637899",
         fillOpacity: 0.5,
         weight: 1.5
@@ -296,7 +295,7 @@ function createIncomeBar(neighID, neighborhood){
     };
 
     // plot the bar graph in the 'Income' div
-    Plotly.newPlot('Income', data, layout);
+    Plotly.newPlot('nav-income', data, layout);
   });
 }
 
@@ -376,7 +375,7 @@ function createAgeBar(neighID, neighborhood){
     };
 
     // plot the bar graph
-    Plotly.newPlot('Age', data, layout);
+    Plotly.newPlot('nav-age', data, layout);
   });
 }
 
@@ -456,7 +455,7 @@ function createEducationBar(neighID, neighborhood){
     };
 
     // plot the bar graph
-    Plotly.newPlot('Education', data, layout);
+    Plotly.newPlot('nav-education', data, layout);
   });
 }
 
@@ -529,16 +528,43 @@ function neighSelect(neighborhood){
       createAgeBar(neighid, neighborhood, 'Age');
       createIncomeBar(neighid, neighborhood, 'Income');
       createCrimeChart(neighid,  neighborhood);
-      Plotly.Plots.resize(Crime);
       createCrimeBreakdown(neighid,  neighborhood);
       
     });
   });
 }
 
-// $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (event) {
-//   var doc = $(".tab-pane.active .plotly-graph-div");
-//   for (var i = 0; i < doc.length; i++) {
-//       Plotly.relayout(doc[i], {autosize: true});
-//   }
-// })
+//-----  Code to fix the issues with Plotly charts not sizing correctly in bootstrap tab controls -----//
+
+// on click event for the education chart tab calls the function to resize the graph
+d3.select('#nav-education-tab').on("click", function() {
+  reDraw("nav-education");
+});
+
+// on click event for the income chart tab calls the function to resize the graph
+d3.select('#nav-income-tab').on("click", function() {
+  reDraw("nav-income");
+});
+
+// on click event for the age chart tab calls the function to resize the graph
+d3.select('#nav-age-tab').on("click", function() {
+  reDraw("nav-age");
+});
+
+// on click event for the crime chart tab calls the function to resize the graph
+d3.select('#nav-crime-tab').on("click", function() {
+  reDraw("nav-crime");
+});
+
+// on click event for the crime breakdown chart tab calls the function to resize the graph
+d3.select('#nav-breakdown-tab').on("click", function() {
+  reDraw("nav-breakdown");
+});
+
+// function to resize the plotly chart sent from the tab on click event - eliminates the issue of the charts not sizing correctly in hidden tabs
+function reDraw(div) {
+  let update = {autosize: true}
+  console.log("update plotly:" + div);
+  Plotly.relayout(div, update);
+
+}
