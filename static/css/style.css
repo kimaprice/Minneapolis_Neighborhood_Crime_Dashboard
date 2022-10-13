@@ -1,6 +1,10 @@
-#nav {
+.nav-link {
   color: #edeef0;
-  background-color: #15305c;
+}
+
+.nav-tabs {
+  color: #edeef0;
+  background-color: #637899;
 }
 
 .title {
