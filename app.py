@@ -186,6 +186,35 @@ def percent():
     # Neighborhood crime info
     return jsonify(percent)
 
+# Route to display total data for crime breakdown
+@app.route("/MinneapolisCrimeBreakdown")
+def MinneapolisCrimeBreakdown():
+    print("Getting data")
+    # Open a session
+    session = Session(engine)
+
+    #Get Crime breakdown for the selected neighborhood
+    sel = [crimeData.year, crimeData.offense_cat, func.sum(crimeData.crime_count).label('crimetotal')]
+    crime_results = session.query(*sel).filter(crimeData.year >= 2019).group_by(crimeData.year, crimeData.offense_cat).order_by(crimeData.offense_cat, crimeData.year).all()
+
+    #Close the session
+    session.close()
+
+    #Put crime data into a list of dictionaries
+    crime_list = []
+    for record in crime_results:
+        (crimeData_year, crimeData_offense_cat, crimeData_crimetotal) = record
+        dict={}
+        dict['year']= crimeData_year
+        dict['crime_counts']= crimeData_crimetotal
+        dict['offense_cat']= crimeData_offense_cat
+        crime_list.append(dict)
+
+
+    # Neighborhood crime info
+    return jsonify(crime_list)
+
+
 
 ###### Route to gather full crimedata table ######
 @app.route("/DetailedCrimeData")
