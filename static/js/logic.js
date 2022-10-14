@@ -229,50 +229,71 @@ function createCrimeBreakdown(neighID, neighborhood){
   });
 }
 
-// Function to show total crime by category for when the tab is first loaded
+// Function to show crime breakdown for all of Minneapolis when page first loads
 function createCrimeBreakdownMinneapolis(){
-  let endpoint = MinneapolisCrimeBreakdown;
-  d3.json(endpoint).then(function(data) {
-    console.log(data);
-    let year = [];
-    let offense_category = [];
-    let crime_count = [];
-    let current_offense = '';
-    let traces = [];
 
-    data.forEach((n) => {
-      if (n.offense_cat==current_offense) {
-        crime_count.push(n.crime_counts);
-        offense_category.push(n.offense_cat);
-        year.push(n.year);
-      } 
-      else {
-        if (crime_count.length==0) {
-          current_offense = n.offense_cat;
+  let endpoint = MinneapolisCrimeBreakdown;
+  
+    // call the endpoint and get the crime data for the selcted neighborhood
+    d3.json(endpoint).then(function(data) {
+      console.log(data);
+  
+      //initializing arrays to store data for stacked area chart
+      let year = [];
+      let offense_category = [];
+      let crime_count = [];
+      let current_offense = '';
+      let traces = [];
+  
+      // Looping thorugh data to pull out the values to push to an array for each offense category, which then get added to the trace array for the stacked area chart
+      data.forEach((n) => {
+        // if the current offense is the same as the previous,  add the count to the array for that offense category and year to the year array
+        if (n.offense_cat==current_offense) {
           crime_count.push(n.crime_counts);
           offense_category.push(n.offense_cat);
-        year.push(n.year);
-        } else {
-        traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
-        crime_count = [];
-        year = [];
-        current_offense = n.offense_cat;
+          year.push(n.year);
+        } 
+        // if the current offense is NOT the same as the previous....
+        else {
+          // and it is the first value of the loop,  add the count to the array for that offense category and year to the year array 
+          if (crime_count.length==0) {
+            current_offense = n.offense_cat;
+            crime_count.push(n.crime_counts);
+            offense_category.push(n.offense_cat);
+            year.push(n.year);
+          } 
+          // and it is NOT the first value of the loop,  push a trace to the group with the age array as the x value and the crime counts array as the y value
+          else {
+            traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+            // reset the arrays to empty to prepare for the next offense category
+            crime_count = [];
+            year = [];
+            // push the first round of data for the next category
+            current_offense = n.offense_cat;
+            crime_count.push(n.crime_counts);
+            offense_category.push(n.offense_cat);
+            year.push(n.year);
+          }
+        }
+      });
+      // Push the last category to the trace
+      traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+  
+      // set layout for the chart to contain the title, set the number if ticks
+      let layout = {
+        xaxis:{dtick:1, nticks:4},
+        yaxis: {automargin: true},
+        margin: {
+          l: 30,
+          r: 20,
+          b: 40,
+          t: 40,
+          pad: 5
         }
       }
-    });
-
-    console.log(traces);
-
-    let plotDiv = document.getElementById('plot');
-    let layout = {
-      autosize: true,
-      width: 1000,
-      hieght: 500,
-      title:"Minneapolis Crime Breakdown",
-      xaxis:{dtick:1, nticks:4}
-    }
-    
-    Plotly.newPlot('nav-breakdown', traces, layout);
+  
+      // Plot the chart in the 'CrimeBreakdown' div
+      Plotly.newPlot('nav-breakdown', traces, layout);
   });
 }
 
