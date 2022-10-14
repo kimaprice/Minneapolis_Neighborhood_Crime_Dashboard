@@ -4,6 +4,7 @@ const CrimeData = "/getCrimeData/";
 const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
 const PercentData = "/percent";
+const MinneapolisGeoJson = "/MinneapolisGeoJson";
 
 // call the page initialization function
 initPage();
@@ -15,6 +16,7 @@ function initPage() {
   d3.select('#Neighborhood').text('Minneapolis');
 
   //Call chart functions on first load to contain Minneapolis (all neighborhoods) Data
+  createGeoJsonMap();
   createEducationBar(100,'Minneapolis', 'Education');
   createAgeBar(100,'Minneapolis', 'Age');
   createIncomeBar(100,'Minneapolis', 'Income');
@@ -25,62 +27,66 @@ function initPage() {
 
 
 // ------ Create Map and load Minneapolis geojson.  Attach functionality for selecting a neighborhood. ----- //
-// Get the GeoJson from file
-let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
 
-// Creating the map object cenetered over Minneapolis
-let myMap = L.map("map", {
-  center: [44.9778, -93.2650],
-  zoom: 11
-});
+function createGeoJsonMap(){
+  // Get the GeoJson from file
+  let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
 
-// Adding the tile layer using open street map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(myMap);
+  // Creating the map object cenetered over Minneapolis
+  let myMap = L.map("map", {
+    center: [44.9778, -93.2650],
+    zoom: 11
+  });
 
-// Add the geojson layer and functionality for hover and click
-d3.json(geoFile).then(function(data) {
-  // Creating a GeoJSON layer with the retrieved data
-  L.geoJson(data, {
-    style: function(feature) {
-      return {
-        color: "white",
-        fillColor: "#637899",
-        fillOpacity: 0.5,
-        weight: 1.5
-      };
-    },
-    // This is called on each feature.
-    onEachFeature: function(feature, layer) {
-      // Set the mouse events to change the map styling.
-      layer.on({
-        // When a user's mouse cursor touches a map feature, the opacity change to 90% so that it stands out and the popup layer is opened to show which neighborhood it is.
-        mouseover: function(event) {
-          layer = event.target;
-          layer.setStyle({
-            fillOpacity: 0.9
-          });
-          layer.openPopup();
-        },
-        // When the cursor no longer hovers over a map feature the feature's opacity reverts back to 50% and the popup closes
-        mouseout: function(event) {
-          layer = event.target;
-          layer.setStyle({
-            fillOpacity: 0.5
-          });
-          layer.closePopup();
-        },
-        // When a feature (neighborhood) is clicked, it calls the function to redraw all of the charts and populate various components with the neighborhood data
-        click: function(event) {
-          neighSelect(event.target.feature.properties.BDNAME);
-        }
-      });
-      // Giving each feature a popup with the neighborhood name
-      layer.bindPopup("<h5>" + feature.properties.BDNAME);
-    }
+  // Adding the tile layer using open street map
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(myMap);
-});
+
+  // Add the geojson layer and functionality for hover and click
+  d3.json(geoFile).then(function(data) {
+
+    // Creating a GeoJSON layer with the retrieved data
+    L.geoJson(data, {
+      style: function(feature) {
+        return {
+          color: "white",
+          fillColor: "#637899",
+          fillOpacity: 0.5,
+          weight: 1.5
+        };
+      },
+      // This is called on each feature.
+      onEachFeature: function(feature, layer) {
+        // Set the mouse events to change the map styling.
+        layer.on({
+          // When a user's mouse cursor touches a map feature, the opacity change to 90% so that it stands out and the popup layer is opened to show which neighborhood it is.
+          mouseover: function(event) {
+            layer = event.target;
+            layer.setStyle({
+              fillOpacity: 0.9
+            });
+            layer.openPopup();
+          },
+          // When the cursor no longer hovers over a map feature the feature's opacity reverts back to 50% and the popup closes
+          mouseout: function(event) {
+            layer = event.target;
+            layer.setStyle({
+              fillOpacity: 0.5
+            });
+            layer.closePopup();
+          },
+          // When a feature (neighborhood) is clicked, it calls the function to redraw all of the charts and populate various components with the neighborhood data
+          click: function(event) {
+            neighSelect(event.target.feature.properties.BDNAME);
+          }
+        });
+        // Giving each feature a popup with the neighborhood name
+        layer.bindPopup("<h5>" + feature.properties.BDNAME);
+      }
+    }).addTo(myMap);
+  });
+}
 
 // -------    Neighborhood Crime Chart Functionality    ----- //
 
@@ -184,28 +190,33 @@ function createCrimeBreakdown(neighID, neighborhood){
           current_offense = n.offense_cat;
           crime_count.push(n.crime_counts);
           offense_category.push(n.offense_cat);
-        year.push(n.year);
+          year.push(n.year);
         } 
         // and it is NOT the first value of the loop,  push a trace to the group with the age array as the x value and the crime counts array as the y value
         else {
-        traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
-        // reset the arrays to empty to prepare for the next offense category
-        crime_count = [];
-        year = [];
-        current_offense = n.offense_cat;
+          traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+          // reset the arrays to empty to prepare for the next offense category
+          crime_count = [];
+          year = [];
+          // push the first round of data for the next category
+          current_offense = n.offense_cat;
+          crime_count.push(n.crime_counts);
+          offense_category.push(n.offense_cat);
+          year.push(n.year);
         }
       }
     });
+    // Push the last category to the trace
+    traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
 
-    // set layout for the chart to contain the title, set the number if ticks and move the legend to below the plot area
+    // set layout for the chart to contain the title, set the number if ticks
     let layout = {
       xaxis:{dtick:1, nticks:4},
-      legend: {"orientation": "h"},
       yaxis: {automargin: true},
       margin: {
         l: 30,
         r: 20,
-        b: 30,
+        b: 40,
         t: 40,
         pad: 5
       }
@@ -286,9 +297,6 @@ function createIncomeBar(neighID, neighborhood){
       yaxis: {automargin: true},
       legend: {"orientation": "h"},
       margin: {
-        l: 20,
-        r: 20,
-        b: 20,
         t: 20,
         pad: 5
       }
@@ -366,9 +374,6 @@ function createAgeBar(neighID, neighborhood){
       yaxis: {automargin: true},
       legend: {"orientation": "h"},
       margin: {
-        l: 20,
-        r: 20,
-        b: 20,
         t: 20,
         pad: 5
       }
@@ -446,9 +451,6 @@ function createEducationBar(neighID, neighborhood){
       yaxis: {automargin: true},
       legend: {"orientation": "h"},
       margin: {
-        l: 20,
-        r: 20,
-        b: 20,
         t: 20,
         pad: 5
       }
@@ -566,5 +568,18 @@ function reDraw(div) {
   let update = {autosize: true}
   console.log("update plotly:" + div);
   Plotly.relayout(div, update);
+
+}
+
+//-----  Code to adjust chart sizes when window resizes  -----//
+window.addEventListener("resize", chartUpdateWindow);
+
+function chartUpdateWindow() {
+    
+  reDraw("nav-education");
+  reDraw("nav-income");
+  reDraw("nav-age");
+  reDraw("nav-crime");
+  reDraw("nav-breakdown");
 
 }

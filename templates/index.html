@@ -34,14 +34,16 @@
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
 
+      <!-- Title Row -->
+      <div class="row h-5 title">
+        <h2> Minneapolis Neighborhood Demographic and Crime Data</h2>
+        <h5> 2019-2022</h5>
+        
+      </div>
   </head>
   <body>
     <div class="container responsive" id="dashboard">
-      <!-- Title Row -->
-      <div class="row h-5 title">
-        <h1> Minneapolis Neighborhood Demographic and Crime Data</h1>
-        <h4> 2019-2022</h4>
-      </div>
+
       <!-- Description Row -->
       <div class="row h-5">
         <p class="description">Welcome, data on crime in Minneapolis neighborhoods can be viewed by making a selection of a neighborhood, which will trigger the graphs below to update with information related to that neighborhood. Additional graphs can be veiwed by clicking on the tabs found above the graph, which will show data related to the tab's title. Data was taken from www.minneapolismn.gov, data.worldbank.org, and opendata.minneapolismn.gov. All data was from January 2018 to August 2022.
@@ -84,7 +86,7 @@
       <div class="row h-45">
         <!-- Crime Charts Nav tabs container -->
         <div class="container">
-          <!-- Demograhpic Nav Tabs Definition -->
+          <!-- Crime Nav Tabs Definition -->
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
               <a class="nav-link active" id="nav-crime-tab" data-bs-toggle="tab" href="#nav-crime" role="tab" aria-controls="nav-crime" aria-selected="true">Crime Rates 2019-2022</a>
