@@ -5,6 +5,7 @@ const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
 const PercentData = "/percent";
 const MinneapolisGeoJson = "/MinneapolisGeoJson";
+const MinneapolisCrimeBreakdown = "/MinneapolisCrimeBreakdown";
 
 // call the page initialization function
 initPage();
@@ -21,7 +22,7 @@ function initPage() {
   createAgeBar(100,'Minneapolis', 'Age');
   createIncomeBar(100,'Minneapolis', 'Income');
   createCrimeChart(100,'Minneapolis');
-  //createMinneCrimeBreakdown('Minneapolis)';
+  createCrimeBreakdownMinneapolis();
 
 }
 
@@ -225,6 +226,53 @@ function createCrimeBreakdown(neighID, neighborhood){
     // Plot the chart in the 'CrimeBreakdown' div
     Plotly.newPlot('nav-breakdown', traces, layout);
     
+  });
+}
+
+// Function to show total crime by category for when the tab is first loaded
+function createCrimeBreakdownMinneapolis(){
+  let endpoint = MinneapolisCrimeBreakdown;
+  d3.json(endpoint).then(function(data) {
+    console.log(data);
+    let year = [];
+    let offense_category = [];
+    let crime_count = [];
+    let current_offense = '';
+    let traces = [];
+
+    data.forEach((n) => {
+      if (n.offense_cat==current_offense) {
+        crime_count.push(n.crime_counts);
+        offense_category.push(n.offense_cat);
+        year.push(n.year);
+      } 
+      else {
+        if (crime_count.length==0) {
+          current_offense = n.offense_cat;
+          crime_count.push(n.crime_counts);
+          offense_category.push(n.offense_cat);
+        year.push(n.year);
+        } else {
+        traces.push({x: year, y: crime_count, stackgroup: 'one', name: current_offense});
+        crime_count = [];
+        year = [];
+        current_offense = n.offense_cat;
+        }
+      }
+    });
+
+    console.log(traces);
+
+    let plotDiv = document.getElementById('plot');
+    let layout = {
+      autosize: true,
+      width: 1000,
+      hieght: 500,
+      title:"Minneapolis Crime Breakdown",
+      xaxis:{dtick:1, nticks:4}
+    }
+    
+    Plotly.newPlot('nav-breakdown', traces, layout);
   });
 }
 
