@@ -4,7 +4,7 @@ const CrimeData = "/getCrimeData/";
 const CrimeBreakdown = "/getCrimeBreakdown/";
 const DemographicData = "/getDemographicData/";
 const PercentData = "/percent";
-const MinneapolisGeoJson = "/MinneapolisGeoJson";
+const MinneapolisGeoJson = "/readjsonfile";
 const MinneapolisCrimeBreakdown = "/MinneapolisCrimeBreakdown";
 
 // call the page initialization function
@@ -35,7 +35,7 @@ function createGeoJsonMap(){
 
   // Creating the map object cenetered over Minneapolis
   let myMap = L.map("map", {
-    center: [44.9778, -93.2650],
+    center: [44.9778, -93.2950],
     zoom: 11
   });
 
@@ -45,7 +45,7 @@ function createGeoJsonMap(){
   }).addTo(myMap);
 
   // Add the geojson layer and functionality for hover and click
-  d3.json(geoFile).then(function(data) {
+  d3.json(MinneapolisGeoJson).then(function(data) {
 
     // Creating a GeoJSON layer with the retrieved data
     geojson = L.choropleth(data, {
@@ -103,7 +103,7 @@ function createGeoJsonMap(){
     }).addTo(myMap);
 
        // Set up the legend.
-      let legend = L.control({ position: "topright" });
+      let legend = L.control({ position: "bottomleft" });
       legend.onAdd = function() {
         let div = L.DomUtil.create("div", "info legend");
         let limits = geojson.options.limits;
