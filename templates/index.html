@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Minneapolis Neighborhood Demographics and Crime Data</title>
+    <title>Minneapolis Crime Dahsboard</title>
 
     <!-- Import the Plotly library.  -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -20,6 +20,9 @@
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
     crossorigin=""></script>
 
+     <!-- leaflet-choropleth JavaScript -->
+     <script type="text/javascript" src="static/js/choropleth.js"></script>
+
     <!-- math.js Library -->
     <script src="https://unpkg.com/mathjs@11.2.1/lib/browser/math.js"></script>
 
@@ -36,26 +39,30 @@
 
       <!-- Title Row -->
       <div class="row h-5 title">
-        <h2> Minneapolis Neighborhood Demographic and Crime Data</h2>
+        <h2> Minneapolis Crime Dahsboard</h2>
         <h5> 2019-2022</h5>
         
       </div>
   </head>
   <body>
     <div class="container responsive" id="dashboard">
-
-      <!-- Description Row -->
-      <div class="row h-5">
-        <p class="description">Welcome, data on crime in Minneapolis neighborhoods can be viewed by making a selection of a neighborhood, which will trigger the graphs below to update with information related to that neighborhood. Additional graphs can be veiwed by clicking on the tabs found above the graph, which will show data related to the tab's title. Data was taken from www.minneapolismn.gov, data.worldbank.org, and opendata.minneapolismn.gov. All data was from January 2018 to August 2022.
-        </p>
-        <p class="description">To use:  Select/click on a neighborhood on the map below.</p>
-      </div>  
+          <!-- Description Row -->
+          <div class="row h-5">
+            <p class="description">
+              This dashbaord contains demographic and crime data visualizations for Minneapolis neighborhoods. 
+              The neighborhood demographics are displayed in tabs to the right of the map.
+              Below the map you will find a chart showing number of crimes by year and the breakdown of offense types.
+              The visualizations displayed when the dashboard first loads are for all of Minneapolis and this data remains on the demogpaphics and total number of crimes charts for easy comparison when a neighborhood is selected.
+              You can click on the items in the legends to hide and show the data in the individual visualizations.
+              <br>
+              
+          </div>
       <!-- Content Row 1: Left column (Map), Righ column (Demographics Charts) -->
       <div class="row h-35">
         <!-- Left column: Map -->
         <div class="col-6">
           <!-- Map Row -->
-          <div class="row" id="map"></div> 
+          <div class="row"> <h6 class="instruction">Click on a neighborhood in the map below to get started.</h6><div id="map"></div> </div> 
         </div>
         <!-- Right column: Demographic Charts -->
         <div class="col-6" id="DemoVisualizations">
@@ -100,8 +107,10 @@
           </div>
         </div>
       </div>
-      <div class="row h-5 title">
-       Note: 2022 data is current through X date
+      <div class="row h-5 footnote">
+        <p>The crime data and map boundaries were gathered from the <a href = "https://www.minneapolismn.gov/" target="_blank" rel="noopener noreferrer">City of Minneapolis</a> and the demographic 
+          data is from <a href = "https://www.mncompass.org/" target="_blank" rel="noopener noreferrer">Minnesota Compass</a> (Wilder Research project).</p>
+        <p>Note: 2022 data is current through X date</p>
       </div>       
     </div>
 
