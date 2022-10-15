@@ -31,7 +31,7 @@ function initPage() {
 
 function createGeoJsonMap(){
   // Get the GeoJson from file
-  let geoFile = "static/Data/Minneapolis_Neighborhoods.geojson"
+  let geoFile = "static/Data/Minneapolis_GeoJson_Updated.geojson"
 
   // Creating the map object cenetered over Minneapolis
   let myMap = L.map("map", {
@@ -48,14 +48,24 @@ function createGeoJsonMap(){
   d3.json(geoFile).then(function(data) {
 
     // Creating a GeoJSON layer with the retrieved data
-    L.geoJson(data, {
-      style: function(feature) {
-        return {
-          color: "white",
-          fillColor: "#637899",
-          fillOpacity: 0.5,
-          weight: 1.5
-        };
+    geojson = L.choropleth(data, {
+
+      // Define which property in the features to use.
+      valueProperty: 'crimeTotal',
+  
+      // Set the color scale.
+      scale: ["#dae1ed", "#022052"],
+  
+      // The number of breaks in the step range
+      steps: 6,
+  
+      // q for quartile, e for equidistant, k for k-means
+      mode: "q",
+      style: {
+        // Border color
+        color: "#ffffff",
+        weight: 1,
+        fillOpacity: 0.8
       },
       // This is called on each feature.
       onEachFeature: function(feature, layer) {
@@ -65,7 +75,9 @@ function createGeoJsonMap(){
           mouseover: function(event) {
             layer = event.target;
             layer.setStyle({
-              fillOpacity: 0.9
+              color: "#021536",
+              weight: 3,
+              fillOpacity: 1
             });
             layer.openPopup();
           },
@@ -73,19 +85,50 @@ function createGeoJsonMap(){
           mouseout: function(event) {
             layer = event.target;
             layer.setStyle({
-              fillOpacity: 0.5
+              color: "#ffffff",
+              weight: 1,
+              fillOpacity: 0.8
             });
             layer.closePopup();
           },
           // When a feature (neighborhood) is clicked, it calls the function to redraw all of the charts and populate various components with the neighborhood data
           click: function(event) {
-            neighSelect(event.target.feature.properties.BDNAME);
+            neighSelect(event.target.feature.properties.BDNAME, feature.properties.crimeTotal);
           }
         });
         // Giving each feature a popup with the neighborhood name
-        layer.bindPopup("<h5>" + feature.properties.BDNAME);
+
+        layer.bindPopup("<h6>" + feature.properties.BDNAME + "</h6>" + feature.properties.crimeTotal + " crimes</h6>");
       }
     }).addTo(myMap);
+
+       // Set up the legend.
+      let legend = L.control({ position: "topright" });
+      legend.onAdd = function() {
+        let div = L.DomUtil.create("div", "info legend");
+        let limits = geojson.options.limits;
+        let colors = geojson.options.colors;
+        let labels = [];
+
+        // Add the minimum and maximum.
+        let legendInfo = "<h6>Number of Crimes<br/>(2019-2022)</h6>" +
+          "<div class=\"labels\">" +
+            "<div class=\"min\">" + limits[0] + "</div>" +
+            "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
+          "</div>";
+
+        div.innerHTML = legendInfo;
+
+        limits.forEach(function(limit, index) {
+          labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
+        });
+
+        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+        return div;
+      };
+
+      // Adding the legend to the map
+      legend.addTo(myMap);
   });
 }
 
@@ -533,66 +576,54 @@ function createEducationBar(neighID, neighborhood){
 // ------   Neighborhood Selection Functionality   ----- //
 
 // function to run when a neighborhood is clicked on the geojson layer of the map - receives neighborhood name
-function neighSelect(neighborhood){
+function neighSelect(neighborhood, crimeTotal){
+// 1. Calculate the percent of total crime in Minneapolis is in this neighborhood
 
-  // Calls the endpoint for the neighborhood data (neighborhood name and neighborhood id)
-  d3.json(NeighborhoodData).then(function(data) {
+  // get endpoint for percent data
+  let endpoint = PercentData;
 
-    //1.  Get the neighborhood id for the neighborhood so it can be passed in other functions
-
-    // initialize the variable to hold the id
-    let neighid = '';
-
-    // filter the data to the enter with for the selected neighborhood
-    let neighborhoodData = data.filter(i=> i.neighborhood == neighborhood);
-
-    // assign the id to the id for the slected neighborhood
-    neighborhoodData.forEach((n) => {
-        neighid = n.neighborhoodID;
-    });
-
-    // 2.  calculate the percent of total crime in Minneapolis is in this neighborhood
-
-    // get endpoint for percent data
-    let endpoint = PercentData;
-
-    // retrieve data from the end point for percent data
-    d3.json(endpoint).then(function(data) {
+  // retrieve data from the end point for percent data
+  d3.json(endpoint).then(function(data) {
       
-      // initalize the arrays to store the data
-      let allCrime = [];
-      let Crime = [];
+    // initalize the arrays to store the data
+    let allCrime = [];
 
-      // loop through the data
-      data.forEach((n) => {
+    // loop through the data
+    data.forEach((n) => {
+      // push the crime count to the array that will hold all of the crime counts - total array
+      allCrime.push(n.crime_counts);
+    });
+    // use the arraygeous library to find the sum of the total crimes array.  This is done by first using the cumsum 
+    // to get the cumulative sum array and then using the max value to find the largest value which is the overall sum 
+    let crimeSum = arr.max(arr.cumsum(allCrime));
 
-        // push the crime count to the array that will hold all of the crime counts - total array
-        allCrime.push(n.crime_counts);
+    // calculate the percent by ussing arraygeous math to identify the max (total value) and min(neighborhood value) 
+    // and then divide the min by the max and muliple by 100
+    let percent = crimeTotal/crimeSum * 100;
 
-        // if the neighborhood is the selected neighborhood, add the crime count to the neighborhood specific array
-        if (n.neighborhood == neighborhood){
-          Crime.push(n.crime_counts);
-        }
+// 2.  Update the dashboard with the neighborhood specific information
+
+    // set the heading to the selected neighborhood name
+    d3.select('#Neighborhood').text(neighborhood);
+
+    // set the percent text area to the selected neighborhood percent
+    d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 2019-2022");
+
+    // Calls the endpoint for the neighborhood data (neighborhood name and neighborhood id)
+    d3.json(NeighborhoodData).then(function(data) {
+
+//3.  Get the neighborhood id for the neighborhood so it can be passed in other functions
+
+      // initialize the variable to hold the id
+      let neighid = '';
+
+      // filter the data to the enter with for the selected neighborhood
+      let neighborhoodData = data.filter(i=> i.neighborhood == neighborhood);
+
+      // assign the id to the id for the slected neighborhood
+      neighborhoodData.forEach((n) => {
+        neighid = n.neighborhoodID;
       });
-  
-      // use the arraygeous library to find the sum of the total crimes array.  This is done by first using the cumsum 
-      // to get the cumulative sum array and then using the max value to find the overall sum 
-      let crimeSum = arr.max(arr.cumsum(allCrime));
-
-      // push the sum to the array containing the neighborhood valud
-      Crime.push(crimeSum);
-   
-      // calculate the percent by ussing arraygeous math to identify the max (total value) and min(neighborhood value) 
-      // and then divide the min by the max and muliple by 100
-      let percent = arr.min(Crime)/arr.max(Crime)*100;
-
-    // 3.  Update the dashboard with the neighborhood specific information
-
-      // set the heading to the selected neighborhood name
-      d3.select('#Neighborhood').text(neighborhood + " Demographics:");
-
-      // set the percent text area to the selected neighborhood percent
-      d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 2019-2022");
 
       // call the functions to redraw the charts with the selected neighborhood data
       createEducationBar(neighid, neighborhood, 'Education');
