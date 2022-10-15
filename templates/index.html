@@ -37,13 +37,15 @@
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
 
-      <!-- Title Row -->
-      <div class="row h-5 header">
-        <h2> Minneapolis Crime Dahsboard</h2>
-        <h5> 2019 - 2022</h5>
-        
-      </div>
+  <!-- Title Row -->
+        <!-- Title Row -->
+        <div class="row h-5 header navbar fixed-top">
+            <h2> Minneapolis Crime Dahsboard</h2>
+            <h5> 2019 - 2022</h5>
+        </div>
+    <!-- Nav Bar-->
   </head>
+
   <body>
     <div class="container responsive" id="dashboard">
           <!-- Description Row -->
@@ -55,7 +57,6 @@
               The visualizations displayed when the dashboard first loads are for all of Minneapolis and this data remains on the demogpaphics and total number of crimes charts for easy comparison when a neighborhood is selected.
               You can click on the items in the legends to hide and show the data in the individual visualizations.
               <br>
-              
           </div>
       <!-- Content Row 1: Left column (Map), Righ column (Demographics Charts) -->
       <div class="row h-35">
@@ -108,9 +109,22 @@
         </div>
       </div>
       <div class="row h-5 footnote">
+        <div class="col-8">
         <p>The crime data and map boundaries were gathered from the <a href = "https://www.minneapolismn.gov/" target="_blank" rel="noopener noreferrer">City of Minneapolis</a> and the demographic 
           data is from <a href = "https://www.mncompass.org/" target="_blank" rel="noopener noreferrer">Minnesota Compass</a> (Wilder Research project).</p>
-        <p>Note: 2022 data is current through X date</p>
+        <p>Note: 2022 data is current through October 13th</p>
+      </div>
+        <div class="col-4">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">View Data Tables</a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#" target="_blank">Crime Data</a></li>
+                    <li><a class="dropdown-item" href="#"target="_blank">Demographic Data</a></li>
+                </ul>
+            </li>
+          </ul>
+        </div>
       </div>       
     </div>
 
