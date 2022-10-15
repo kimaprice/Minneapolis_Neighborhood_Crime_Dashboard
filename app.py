@@ -249,6 +249,20 @@ def DetailedCrimeData():
     # Neighborhood crime info
     return jsonify(crime_list)
 
+###### Route to read the Minneapolis neighborhood GeoJson ######
+@app.route("/readjsonfile")
+def ReadJsonFileRoute():    
+
+    # set a variable to our file location
+    filepath = "static/data/Minneapolis_GeoJson_Updated.geojson"
+
+    # Open the file
+    with open(filepath) as f:    
+        # lod the files data to a json variable
+        json_data = json.load(f)
+
+    # Minneapolis neighborhood GeoJson data
+    return jsonify(json_data)
 
 if __name__ == "__main__":
     app.run(debug=True)

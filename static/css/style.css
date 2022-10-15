@@ -12,14 +12,16 @@
 }
 
 .instruction {
-
+  font-style: italic;
 }
 
-.title {
+.header {
   color: #edeef0;
   background-color: #15305c;
   text-indent: 1ch;
   text-align: center;
+  padding: 10px 16px;
+
 }
 
 .footnote {
@@ -45,6 +47,8 @@
 .description {
   color: #15305c;
   text-indent: 1ch;
+  text-align: center;
+  padding: 10px 16px;
 }
 
 .Demographics {
@@ -90,6 +94,8 @@ body {
 
 head {
   padding: 1ch;
+  position: fixed;
+
 }
 
 /* CSS from the leaflet-choropleth documentation */
