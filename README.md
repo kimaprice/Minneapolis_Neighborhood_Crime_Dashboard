@@ -30,19 +30,25 @@ This code base gathers datasets to create dashbaord containing demographic and c
 ## Database
 The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.  The geojson file used in the map control is stored as a file in the ``static/Data`` folder.  In order to use the dashboard, you will need follow the steps below for creating the database and running the ETL scripts to prepare and load the data to the database.
 
-### Instructions to recreate the PostgreSQL database housing the demographic and crime data
+### Schema for database:
 
-Schema for database:
 ![alt text](/Resources/DB_files/DB_schema.png)
 
+
+## Instructions to recreate the PostgreSQL database housing the demographic and crime data
+
  1. Clone the Repo git@github.com:kimaprice/Minneapolis_Neighborhood_Crime_Dashboard.git
+ 1. Create a `config.py` file in the root directory to contain your PostgreSQL/PGAdmin information. You can use the template : `Resources/config_template.py`
+ 1. Add the information below to your `config.py`:
+	1. myusername = `<your username goes here>`
+	1. mypassword = `<your password goes here>`
+	1. myport_number = `<your port number goes here>`
  1. Open pgAdmin PostgreSQL
  1. Create a new database named ``minne_crime_db``.
  1. Open the ``Resources/DB_files/minne_crime_db_Create.sql`` file in a query tool and run it to create the tables.
- 1. Run ``jupyter notebook`` and open ``crime_data_ETL.ipynb`` - run this in an environment that has pandas, sqlalchemy, numpy, and python 3.8
- 1. Verify and update as needed the `username` `port` and `password` in the `LOAD` section of the notebook to match your PostgreSQL.
+ 1. Run ``jupyter notebook`` and open ``crime_data_ETL.ipynb`` - run this in an environment that has `pandas`, `sqlalchemy`, `re`, `os`, `json` and `python 3.8`
  1. Run the notebook.
- 1. Use this test queries in ``Resources/DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
+ 1. Use the test queries in ``Resources/DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
 
 ## Data Access Layer
 A Flask server is used to access the data and serve it to the dashboard.  There are 9 routes used to gather data for the various visualizations on the dashboard.

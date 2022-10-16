@@ -1,3 +1,7 @@
+#Import config file password values
+import config
+
+#Import Flask
 from flask import Flask, render_template, redirect, jsonify
 
 #Import json
@@ -11,11 +15,11 @@ from sqlalchemy import or_
 from sqlalchemy import func
 from sqlalchemy import and_
 
-# Define the PostgreSQL connection parameters
-username = 'postgres'  
-password = 'bootcamp'  
+####### Define the PostgreSQL connection parameters - getting username, password and port from the config file the user created per the instructions ##########
+username = config.myusername  
+password = config.mypassword  
 database_name = 'minne_crime_db' 
-port_number = '5432' 
+port_number = config.myport_number 
 connection_string = f'postgresql://{username}:{password}@localhost:{port_number}/{database_name}'
 
 # Connect to the SQL database
