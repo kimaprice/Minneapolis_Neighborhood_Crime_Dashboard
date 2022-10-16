@@ -38,7 +38,7 @@ The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.
 ## Instructions to recreate the PostgreSQL database housing the demographic and crime data
 
  1. Clone the Repo git@github.com:kimaprice/Minneapolis_Neighborhood_Crime_Dashboard.git
- 1. Create a `config.py` file in the root directory to contain your PostgreSQL/PGAdmin information. You can use the template : `Resources/config_template.py`
+ 1. Create a `config.py` file in the **root** directory to contain your PostgreSQL/PGAdmin information. You can use the template : `Resources/config_template.py` as a guide.
  1. Add the information below to your `config.py`:
 	1. myusername = `<your username goes here>`
 	1. mypassword = `<your password goes here>`
@@ -60,17 +60,17 @@ The interface was created in html and javascript is used to dynamically draw the
 	* Link: https://unpkg.com/arraygeous@0.1.24/build/arraygeous.min.js
 
 # Main Attraction - The Minneapolis Crime Dashboard
- * The map of Minneapolis neighborhoods
+ * **Map of Minneapolis neighborhoods**
 	* Each neighborhood is shaded with a color corresponding to the number of crimes committed.
 	* When you hover over a neighborhood, a popup displays the name of the neighborhood along with the number of crimes committed.
 	* When you click on a neighborhood, the visualizations on the page update to show the data related to that neighborhood.
- * The neighborhood demographics (age, income, education) are displayed in tabs to the right of the map.
+ * **Neighborhood demographics** (age, income, education) are displayed in tabs to the right of the map.
 	* When a neighborhood is selected, the percent of total Minneapolis crime that occurred in that neighborhood is populated in row about the demographic tabs
 	* The Minneapolis (all neighborhoods) demographic data is loaded when the dashboard first loads and remains on the visualizations along with the selected neighborhood for easier comparison.
 	* The legend on each visualiztion allows the user to toggle the different data sets on and off of the chart.
- * The crime charts (total crime count by year: 2019-2022, and breakdown by offense for the selected neighborhood) are located in tabs below the map.
+ * **Crime charts** (total crime count by year: 2019-2022, and breakdown by offense for the selected neighborhood) are located in tabs below the map.
 	* The Minneapolis (all neighborhoods) demographic data is loaded when the dashboard first loads and remains on the total crime chart along with the selected neighborhood for easier comparison.
 	* The legend on each visualiztion allows the user to toggle the different data sets on and off of the chart.
-*  The footer on the dashboard contains the links to the websites from which the data was sourced and a drop down with links to view the crime and demographic data. 
+*  The **footer** on the dashboard contains the links to the websites from which the data was sourced and a drop down with links to view the crime and demographic data. 
 
 ![alt text](/Resources/dashboard.png)
