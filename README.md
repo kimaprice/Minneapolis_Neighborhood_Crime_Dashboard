@@ -73,4 +73,4 @@ The interface was created in html, and javascript is used to dynamically draw th
 	* The legend on each visualiztion allows the user to toggle the different data sets on and off of the chart.
 *  The **footer** on the dashboard contains the links to the websites from which the data was sourced. 
 
-
+![alt text](/Resources/dashboard.png)
