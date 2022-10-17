@@ -71,6 +71,6 @@ The interface was created in html and javascript is used to dynamically draw the
  * **Crime charts** (total crime count by year: 2019-2022, and breakdown by offense for the selected neighborhood) are located in tabs below the map.
 	* The Minneapolis (all neighborhoods) demographic data is loaded when the dashboard first loads and remains on the total crime chart along with the selected neighborhood for easier comparison.
 	* The legend on each visualiztion allows the user to toggle the different data sets on and off of the chart.
-*  The **footer** on the dashboard contains the links to the websites from which the data was sourced and a drop down with links to view the crime and demographic data. 
+*  The **footer** on the dashboard contains the links to the websites from which the data was sourced. 
 
 ![alt text](/Resources/dashboard.png)

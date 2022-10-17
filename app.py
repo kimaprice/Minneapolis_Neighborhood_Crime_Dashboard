@@ -190,7 +190,7 @@ def percent():
     # Neighborhood crime info
     return jsonify(percent)
 
-# Route to display total data for crime breakdown
+###### Route to display total data for crime breakdown ######
 @app.route("/MinneapolisCrimeBreakdown")
 def MinneapolisCrimeBreakdown():
     print("Getting data")
@@ -219,39 +219,6 @@ def MinneapolisCrimeBreakdown():
     return jsonify(crime_list)
 
 
-
-###### Route to gather full crimedata table ######
-@app.route("/DetailedCrimeData")
-def DetailedCrimeData():
-    print("Getting data")
-    # Open a session
-    session = Session(engine)
-
-    #Get Crime data for all Minneapolis
-    sel = [neighborhoodData.neighborhoodid, neighborhoodData.neighborhood, crimeData.occurred_date, crimeData.offense_cat, crimeData.offense, crimeData.latitude, crimeData.longitude, crimeData.crime_count]
-    crime_results = session.query(*sel).join(crimeData, neighborhoodData.neighborhoodid == crimeData.neighborhoodid).all()
-  
-    #Close the session
-    session.close()
-
-    #Put crime data into a list of dictionaries
-    crime_list = []
-    for record in crime_results:
-        (neighborhoodData_neighborhoodid, neighborhoodData_neighborhood, crimeData_occurred_date, crimeData_offense_cat, crimeData_offense, crimeData_latitude, crimeData_longitude, crimeData_crime_count) = record
-        dict = {}
-        dict["neighborhoodID"] = neighborhoodData_neighborhoodid
-        dict["neighborhood"] = neighborhoodData_neighborhood
-        dict["offense_cat"] = crimeData_offense_cat
-        dict["crime_count"] = crimeData_crime_count
-        dict["occured_date"] = crimeData_occurred_date
-        dict["offense"] = crimeData_offense
-        dict["latitude"] = crimeData_latitude
-        dict["longitude"] = crimeData_longitude
-        crime_list.append(dict)
-
-
-    # Neighborhood crime info
-    return jsonify(crime_list)
 
 ###### Route to read the Minneapolis neighborhood GeoJson ######
 @app.route("/readjsonfile")
