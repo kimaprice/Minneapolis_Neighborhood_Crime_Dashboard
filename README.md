@@ -15,7 +15,7 @@ This code base gathers datasets to create dashbaord containing demographic and c
 
  * Minneapolis Neighborhood Crime: crime_data.csv
 	* Link: https://www.minneapolismn.gov/government/government-data/datasource/crime-dashboard/
-	* Description: Contains crime statistics for Minneapolis neighborhoods from 1/1/2018 through 10/13/2022.  Columns we will use are neighborhood, occurred date, offense category, offense, crime_count 
+	* Description: Contains crime statistics for Minneapolis neighborhoods from 1/1/2019 through 10/13/2022.  Columns we will use are neighborhood, occurred date, offense category, offense, crime_count 
 
 * Neighborhood Demographic data: ~5 bytes per file (85 files per demographic - age, education, income)
 	* Link for selecting neighborhoods: https://www.mncompass.org/profiles/neighborhoods/minneapolis-saint-paul
@@ -28,7 +28,7 @@ This code base gathers datasets to create dashbaord containing demographic and c
 
 
 ## Database
-The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.  The geojson file used in the map control is stored as a file in the ``static/Data`` folder.  In order to use the dashboard, you will need follow the steps below for creating the database and running the ETL scripts to prepare and load the data to the database.
+The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.  The geojson file used in the map control is stored as a file in the ``static/Data`` folder.  In order to use the dashboard, you will need to follow the steps below for creating the database and running the ETL scripts to prepare and load the data to the database.
 
 ### Schema for database:
 
@@ -54,7 +54,7 @@ The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.
 A Flask server is used to access the data and serve it to the dashboard.  There are 9 routes used to gather data for the various visualizations on the dashboard.
 
 ## Interface Layer
-The interface was created in html and javascript is used to dynamically draw the visualizations and provide the interactive components.  A style sheet was used to apply custom styles to the dashboard features.
+The interface was created in html, and javascript is used to dynamically draw the visualizations and provide the interactive components.  A style sheet was used to apply custom styles to the dashboard features.
  * We used a new (to us) Javascript Library:
 	* arraygeous JS Library: Library for math on an array used in calculating the percent of crime for the selected neighborhood
 	* Link: https://unpkg.com/arraygeous@0.1.24/build/arraygeous.min.js
