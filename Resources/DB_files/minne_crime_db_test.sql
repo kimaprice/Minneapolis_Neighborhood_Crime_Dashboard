@@ -11,7 +11,7 @@ d.offense_cat,
 sum(d.crime_count)
 from crimeData as d 
 left join neighborhood as n
-on d.neighborhoodid = n.neighborhoodid
+on d.neighborhoodid = n.neighborhood_id
 Group By n.neighborhood,
 d.offense_cat
 Order By n.neighborhood,
