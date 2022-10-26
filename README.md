@@ -51,7 +51,7 @@ The data for the dashboard is saved in a PostgreSQL database ``minne_crime_db``.
  1. Use the test queries in ``Resources/DB_files/minne_crime_db_test.sql`` to validate you successfully loaded the data.
 
 ## Data Access Layer
-A Flask server is used to access the data and serve it to the dashboard.  There are 9 routes used to gather data for the various visualizations on the dashboard.
+A Flask server is used to access the data and serve it to the dashboard.  There are 8 routes used to gather data for the various visualizations on the dashboard from the PostgreSQL DB and GeoJson file.
 
 ## Interface Layer
 The interface was created in html, and javascript is used to dynamically draw the visualizations and provide the interactive components.  A style sheet was used to apply custom styles to the dashboard features.
@@ -71,6 +71,6 @@ The interface was created in html, and javascript is used to dynamically draw th
  * **Crime charts** (total crime count by year: 2019-2022, and breakdown by offense for the selected neighborhood) are located in tabs below the map.
 	* The Minneapolis (all neighborhoods) demographic data is loaded when the dashboard first loads and remains on the total crime chart along with the selected neighborhood for easier comparison.
 	* The legend on each visualiztion allows the user to toggle the different data sets on and off of the chart.
-*  The **footer** on the dashboard contains the links to the websites from which the data was sourced and a drop down with links to view the crime and demographic data. 
+*  The **footer** on the dashboard contains the links to the websites from which the data was sourced. 
 
 ![alt text](/Resources/dashboard.png)

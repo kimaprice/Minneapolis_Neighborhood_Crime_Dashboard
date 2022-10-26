@@ -607,7 +607,7 @@ function neighSelect(neighborhood, crimeTotal){
     d3.select('#Neighborhood').text(neighborhood);
 
     // set the percent text area to the selected neighborhood percent
-    d3.select('#Percent').text(percent.toFixed(2) + "% of Minneaoplis Crime 2019-2022");
+    d3.select('#Percent').text(percent.toFixed(2) + "% of Minneapolis Crime 2019-2022");
 
     // Calls the endpoint for the neighborhood data (neighborhood name and neighborhood id)
     d3.json(NeighborhoodData).then(function(data) {
